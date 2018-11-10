@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>公用模版</title>
+</head>
+<body>
+
+    <!--S 头部-->
+    <div th:fragment="header">
+        <el-header>
+            华山路人才市场
+        </el-header>
+    </div>
+    <!--S 头部-->
+
+    <!--左侧导航 S-->
+    <div th:fragment="aside">
+        <el-aside width="200px">
+            <el-menu
+                    default-active="1"
+                    class="el-menu-vertical-demo"
+                    active-text-color="#ffd04b">
+                <el-submenu index="1">
+                    <template slot="title">
+                        <i class="el-icon-location"></i>
+                        <span>临时工</span>
+                    </template>
+                    <el-menu-item index="1-1">选项1</el-menu-item>
+                </el-submenu>
+            </el-menu>
+        </el-aside>
+    </div>
+    <!--左侧导航 E-->
+
+    <!--S 页脚-->
+    <div th:fragment="footer">
+
+    </div>
+    <!--S 页脚-->
+
+    <!-- 引入js -->
+    <div th:fragment="alljs">
+
+        <!-- import Vue before Element -->
+        <script src="https://unpkg.com/vue/dist/vue.js"></script>
+        <!-- import JavaScript -->
+        <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+
+    </div>
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <!-- import Vue before Element -->
+    <script src="https://unpkg.com/vue/dist/vue.js"></script>
+    <!-- import JavaScript -->
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+</body>
+</html>

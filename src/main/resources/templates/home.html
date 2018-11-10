@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <!-- import CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <el-container id="app">
+
+        <!--S 头部-->
+        <el-header>
+            华山路人才市场
+        </el-header>
+        <!--S 头部-->
+
+        <el-container>
+
+            <el-aside width="200px">
+                <el-menu
+                        default-active="1"
+                        class="el-menu-vertical-demo"
+                        active-text-color="#ffd04b">
+                    <el-submenu index="1">
+                        <template slot="title">
+                            <i class="el-icon-location"></i>
+                            <span>临时工</span>
+                        </template>
+                        <el-menu-item index="1-1">选项1</el-menu-item>
+                    </el-submenu>
+                </el-menu>
+            </el-aside>
+
+            <!--主体 S-->
+            <el-container>
+
+                <el-main>
+
+                    <!--检索表单-->
+                    <el-form :inline="true" :model="choreboy"  class="demo-form-inline">
+                        <el-form-item label="名字">
+                            <el-input v-model="choreboy.cbname" placeholder="临时工名称"></el-input>
+                        </el-form-item>
+                        <el-form-item>
+                            <el-button type="primary" @click="onSubmit">查询</el-button>
+                            <el-button type="success" @click="onAdd('choreboy')">新增</el-button>
+                        </el-form-item>
+                    </el-form>
+
+                    <!--新增 S-->
+                    <el-dialog title="新增临时工" :visible.sync="addVisible" @close="resetForm('choreboy')">
+
+                        <el-form :model="choreboy" :rules="rules" ref="choreboy" label-width="120px">
+                            <el-form-item label="姓名" prop="cbname">
+                                <el-input v-model="choreboy.cbname" autocomplete="off"></el-input>
+                            </el-form-item>
+
+                            <el-form-item label="电子厂" prop="factoryuid">
+
+                                <el-select v-model="choreboy.factoryuid" placeholder="请选择厂区">
+                                    <el-option
+                                            v-for="item in factories"
+                                            :key="item.uid"
+                                            :label="item.name"
+                                            :value="item.uid">
+                                    </el-option>
+                                </el-select>
+
+                            </el-form-item>
+
+                            <el-form-item label="收支" prop="moneyClass">
+                                <el-radio v-model="choreboy.moneyClass" label="1">支出</el-radio>
+                                <el-radio v-model="choreboy.moneyClass" label="0">收入</el-radio>
+                            </el-form-item>
+
+                            <el-form-item label="临时工资" prop="money">
+                                <el-input type="number" v-model="choreboy.money" autocomplete="off"></el-input>
+                            </el-form-item>
+
+                            <el-form-item label="日期" prop="date">
+                                <el-date-picker type="date" placeholder="选择日期" v-model="choreboy.date" style="width: 100%;"></el-date-picker>
+                            </el-form-item>
+                        </el-form>
+
+                        <div slot="footer" class="dialog-footer">
+                            <el-button type="primary" @click="onSubmit('choreboy')">提交</el-button>
+                        </div>
+                    </el-dialog>
+                    <!--新增 E-->
+
+                </el-main>
+
+            </el-container>
+            <!--主体 S-->
+
+        </el-container>
+    </el-container>
+</body>
+
+<!-- import Vue before Element -->
+<script src="https://unpkg.com/vue/dist/vue.js"></script>
+<!-- import JavaScript -->
+<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+<script th:src="@{/js/axios.min.js}"></script>
+<script src="https://cdn.bootcss.com/qs/6.5.1/qs.min.js"></script>
+
+<script th:inline="javascript">
+
+    var data = {
+        factories : [],
+        choreboy : {
+            cbname : '',
+            moneyClass : '1',
+            money : 0,
+            date : '',
+            factoryuid : ''
+        },
+        addVisible : false,
+        formLabelWidth: '120px',
+
+        // 表单校验
+        rules : {
+            cbname : [
+                {
+                    required : true,
+                    message : '姓名不能为空',
+                    trigger : 'blur'
+                },
+                {
+                    min : 1,
+                    max : 50,
+                    message : '长度在 1 到 20 个字符',
+                    trigger : 'blur'
+                }
+            ],
+
+            factoryuid: [
+                { required: true, message: '请选择厂区', trigger: 'change' }
+            ],
+
+            money: [
+                {required: true, message: '请填写临时工工资', trigger: 'blur' }
+            ],
+
+            date: [
+                { type: 'date', required: true, message: '请选择日期', trigger: 'change' }
+            ],
+
+            moneyClass: [
+                { required: true, message: '请选择收支类型', trigger: 'change' }
+            ]
+
+        }
+
+    };
+
+    var vm = new Vue({
+        el : '#app',
+        data : data,
+        mounted : function () {
+            console.log('执行异步方法...');
+        },
+        methods : {
+            // 电子厂列表
+            getFactories : function () {
+                axios.get(/*[[@{/factory/factories}]]*/)
+                .then(function (response) {
+                    console.log("sss");
+                    var result = response.data;
+                    console.log(result);
+                    if (result && result.success) {
+                        console.log(vm.factories);
+                        vm.factories = result.o;
+                    }
+
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
+            },
+
+            onSubmit : function (formName) {
+                console.log("提交");
+
+                this.$refs[formName].validate((valid) => {
+
+                    if (valid) {
+
+                        // vue实例
+                        var vm = this;
+                        console.log(vm.choreboy.cbname);
+                        // post方法
+                        axios.post(/*[[@{/choreboy/choreboys}]]*/,  Qs.stringify(vm.choreboy))
+                        .then(function (response) {
+
+                            var type = "success";
+                            var result = response.data;
+                            if (result && result.success) {
+                                vm.addVisible = false;
+                            } else {
+                                type = "error";
+                            }
+
+                            vm.$message({
+                                type: type,
+                                message: result.message
+                            });
+                        })
+                        .catch(function (error) {
+                            console.log(error);
+                        });
+
+                    } else {
+                        console.log('error submit!!');
+                        return false;
+                    }
+
+                });
+            },
+
+            onAdd : function(formName) {
+                this.addVisible = true;
+                vm.getFactories();
+            },
+
+            // 重置表单
+            resetForm : function(formName) {
+                this.$refs[formName].resetFields();
+            }
+        }
+    });
+</script>
+</html>

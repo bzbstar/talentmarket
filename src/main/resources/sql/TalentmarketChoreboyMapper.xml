@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.bzb.talentmarket.mapper.TalentmarketChoreboyMapper" >
+  <resultMap id="BaseResultMap" type="com.bzb.talentmarket.entity.TalentmarketChoreboy" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="uid" property="uid" jdbcType="VARCHAR" />
+    <result column="cbuid" property="cbuid" jdbcType="VARCHAR" />
+    <result column="cbname" property="cbname" jdbcType="VARCHAR" />
+    <result column="factoryuid" property="factoryuid" jdbcType="VARCHAR" />
+    <result column="factoryname" property="factoryname" jdbcType="VARCHAR" />
+    <result column="money" property="money" jdbcType="BIGINT" />
+    <result column="money_class" property="moneyClass" jdbcType="TINYINT" />
+    <result column="status" property="status" jdbcType="TINYINT" />
+    <result column="date" property="date" jdbcType="DATE" />
+    <result column="credate" property="credate" jdbcType="TIMESTAMP" />
+    <result column="upddate" property="upddate" jdbcType="TIMESTAMP" />
+    <result column="userid" property="userid" jdbcType="VARCHAR" />
+    <result column="username" property="username" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, uid, cbuid, cbname, factoryuid, factoryname, money, money_class, status, date, 
+    credate, upddate, userid, username
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from tb_talentmarket_choreboy
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from tb_talentmarket_choreboy
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.bzb.talentmarket.entity.TalentmarketChoreboy" >
+    insert into tb_talentmarket_choreboy (id, uid, cbuid, 
+      cbname, factoryuid, factoryname, 
+      money, money_class, status, 
+      date, credate, upddate, 
+      userid, username)
+    values (#{id,jdbcType=INTEGER}, #{uid,jdbcType=VARCHAR}, #{cbuid,jdbcType=VARCHAR}, 
+      #{cbname,jdbcType=VARCHAR}, #{factoryuid,jdbcType=VARCHAR}, #{factoryname,jdbcType=VARCHAR}, 
+      #{money,jdbcType=BIGINT}, #{moneyClass,jdbcType=TINYINT}, #{status,jdbcType=TINYINT}, 
+      #{date,jdbcType=DATE}, #{credate,jdbcType=TIMESTAMP}, #{upddate,jdbcType=TIMESTAMP}, 
+      #{userid,jdbcType=VARCHAR}, #{username,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.bzb.talentmarket.entity.TalentmarketChoreboy" >
+    insert into tb_talentmarket_choreboy
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="uid != null" >
+        uid,
+      </if>
+      <if test="cbuid != null" >
+        cbuid,
+      </if>
+      <if test="cbname != null" >
+        cbname,
+      </if>
+      <if test="factoryuid != null" >
+        factoryuid,
+      </if>
+      <if test="factoryname != null" >
+        factoryname,
+      </if>
+      <if test="money != null" >
+        money,
+      </if>
+      <if test="moneyClass != null" >
+        money_class,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="date != null" >
+        date,
+      </if>
+      <if test="credate != null" >
+        credate,
+      </if>
+      <if test="upddate != null" >
+        upddate,
+      </if>
+      <if test="userid != null" >
+        userid,
+      </if>
+      <if test="username != null" >
+        username,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="uid != null" >
+        #{uid,jdbcType=VARCHAR},
+      </if>
+      <if test="cbuid != null" >
+        #{cbuid,jdbcType=VARCHAR},
+      </if>
+      <if test="cbname != null" >
+        #{cbname,jdbcType=VARCHAR},
+      </if>
+      <if test="factoryuid != null" >
+        #{factoryuid,jdbcType=VARCHAR},
+      </if>
+      <if test="factoryname != null" >
+        #{factoryname,jdbcType=VARCHAR},
+      </if>
+      <if test="money != null" >
+        #{money,jdbcType=BIGINT},
+      </if>
+      <if test="moneyClass != null" >
+        #{moneyClass,jdbcType=TINYINT},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=TINYINT},
+      </if>
+      <if test="date != null" >
+        #{date,jdbcType=DATE},
+      </if>
+      <if test="credate != null" >
+        #{credate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="upddate != null" >
+        #{upddate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="userid != null" >
+        #{userid,jdbcType=VARCHAR},
+      </if>
+      <if test="username != null" >
+        #{username,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.bzb.talentmarket.entity.TalentmarketChoreboy" >
+    update tb_talentmarket_choreboy
+    <set >
+      <if test="uid != null" >
+        uid = #{uid,jdbcType=VARCHAR},
+      </if>
+      <if test="cbuid != null" >
+        cbuid = #{cbuid,jdbcType=VARCHAR},
+      </if>
+      <if test="cbname != null" >
+        cbname = #{cbname,jdbcType=VARCHAR},
+      </if>
+      <if test="factoryuid != null" >
+        factoryuid = #{factoryuid,jdbcType=VARCHAR},
+      </if>
+      <if test="factoryname != null" >
+        factoryname = #{factoryname,jdbcType=VARCHAR},
+      </if>
+      <if test="money != null" >
+        money = #{money,jdbcType=BIGINT},
+      </if>
+      <if test="moneyClass != null" >
+        money_class = #{moneyClass,jdbcType=TINYINT},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=TINYINT},
+      </if>
+      <if test="date != null" >
+        date = #{date,jdbcType=DATE},
+      </if>
+      <if test="credate != null" >
+        credate = #{credate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="upddate != null" >
+        upddate = #{upddate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="userid != null" >
+        userid = #{userid,jdbcType=VARCHAR},
+      </if>
+      <if test="username != null" >
+        username = #{username,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.bzb.talentmarket.entity.TalentmarketChoreboy" >
+    update tb_talentmarket_choreboy
+    set uid = #{uid,jdbcType=VARCHAR},
+      cbuid = #{cbuid,jdbcType=VARCHAR},
+      cbname = #{cbname,jdbcType=VARCHAR},
+      factoryuid = #{factoryuid,jdbcType=VARCHAR},
+      factoryname = #{factoryname,jdbcType=VARCHAR},
+      money = #{money,jdbcType=BIGINT},
+      money_class = #{moneyClass,jdbcType=TINYINT},
+      status = #{status,jdbcType=TINYINT},
+      date = #{date,jdbcType=DATE},
+      credate = #{credate,jdbcType=TIMESTAMP},
+      upddate = #{upddate,jdbcType=TIMESTAMP},
+      userid = #{userid,jdbcType=VARCHAR},
+      username = #{username,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>
