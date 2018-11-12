@@ -17,4 +17,13 @@ public class FinalData {
         public static int STATUS_ON = 1; // 启用
         public static int STATUS_OFF = 0; // 禁用
     }
+    
+    public static class Wx {
+    	// 消息类型
+    	public static String MSGTYPE_EVENT = "event"; // 事件类型
+    	
+    	// 事件类型
+		public static String EVENT_SUBSCIBE = "subscribe"; // 订阅
+		public static String EVENT_UNSUBSCRIBE = "unsubscribe";// 取消订阅
+    }
 }
