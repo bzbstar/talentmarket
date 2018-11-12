@@ -39,8 +39,13 @@ public class WxPushController {
 	@Autowired
 	private WxPushService WxPushService;
 
+	/**
+	 * 检验微信签名
+	 * @param request
+	 * @param response
+	 */
 	@RequestMapping(value = "/push", method = RequestMethod.GET)
-	public void push(HttpServletRequest request, HttpServletResponse response) {
+	public void checkWxSign(HttpServletRequest request, HttpServletResponse response) {
 		PrintWriter print;
 		// 微信加密签名
 		String signature = request.getParameter("signature");
