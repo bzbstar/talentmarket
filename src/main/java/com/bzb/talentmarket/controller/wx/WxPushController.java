@@ -40,7 +40,7 @@ public class WxPushController {
 	private WxPushService WxPushService;
 
 	/**
-	 * 检验微信签名
+	 * 检验微信签名222
 	 * @param request
 	 * @param response
 	 */
