@@ -14,25 +14,25 @@
 
         <!--数据库链接URL，用户名、密码 -->
         <jdbcConnection driverClass="com.mysql.jdbc.Driver"
-                        connectionURL="jdbc:mysql://localhost:3306/bzb?useUnicode=true&amp;characterEncoding=UTF-8&amp;allowMultiQueries=true" userId="root"
+                        connectionURL="jdbc:mysql://localhost:3306/talentmarket?useUnicode=true&amp;characterEncoding=UTF-8&amp;allowMultiQueries=true" userId="root"
                         password="123456"/>
 
         <!-- 生成模型的包名和位置-->
         <javaModelGenerator targetPackage="com.bzb.talentmarket.entity"
-                            targetProject="D:/springcloud/talentmarket/src/main/java">
+                            targetProject="D:/hsl/talentmarket/src/main/java">
             <property name="enableSubPackages" value="true"/>
             <property name="trimStrings" value="true"/>
         </javaModelGenerator>
 
         <!-- 生成映射文件的包名和位置-->
         <sqlMapGenerator targetPackage="sql"
-                         targetProject="D:/springcloud/talentmarket/src/main/resources">
+                         targetProject="D:/hsl/talentmarket/src/main/resources">
             <property name="enableSubPackages" value="true"/>
         </sqlMapGenerator>
 
         <!-- 生成映射文件的包名和位置-->
         <javaClientGenerator targetPackage="com.bzb.talentmarket.mapper"
-                             targetProject="D:/springcloud/talentmarket/src/main/java" type="XMLMAPPER">
+                             targetProject="D:/hsl/talentmarket/src/main/java" type="XMLMAPPER">
             <property name="enableSubPackages" value="true"/>
         </javaClientGenerator>
 
@@ -45,7 +45,29 @@
                selectByExampleQueryId="false">
         </table>-->
 
-        <table tableName="user" domainObjectName="User"
+        <!--会员表-->
+        <table tableName="tb_talentmarket_member" domainObjectName="TalentmarketMember"
+               enableCountByExample="false" enableUpdateByExample="false"
+               enableDeleteByExample="false" enableSelectByExample="false"
+               selectByExampleQueryId="false">
+        </table>
+
+        <!--粉丝推荐记录表-->
+        <table tableName="tb_talentmarket_recommend_records" domainObjectName="TalentmarketRecommendRecords"
+               enableCountByExample="false" enableUpdateByExample="false"
+               enableDeleteByExample="false" enableSelectByExample="false"
+               selectByExampleQueryId="false">
+        </table>
+
+        <!--营销规则表-->
+        <table tableName="tb_talentmarket_gamerules" domainObjectName="TalentmarketGamerules"
+               enableCountByExample="false" enableUpdateByExample="false"
+               enableDeleteByExample="false" enableSelectByExample="false"
+               selectByExampleQueryId="false">
+        </table>
+
+        <!--员工基本信息表-->
+        <table tableName="tb_talentmarket_employee" domainObjectName="TalentmarketEmployee"
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false"
                selectByExampleQueryId="false">
