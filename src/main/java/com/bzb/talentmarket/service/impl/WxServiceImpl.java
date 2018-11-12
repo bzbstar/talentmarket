@@ -1,10 +1,15 @@
 package com.bzb.talentmarket.service.impl;
 
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Member;
 import java.net.URLEncoder;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.bzb.talentmarket.entity.TalentmarketMember;
+import com.bzb.talentmarket.mapper.TalentmarketMemberMapper;
+import com.bzb.talentmarket.utils.UniqueIdUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +37,9 @@ public class WxServiceImpl implements WxService {
 	
 	@Autowired
 	private RestTemplate restTemplate;
+
+	@Autowired
+	private TalentmarketMemberMapper memberMapper;
 
 	@Value("${wx_appid}")
 	private String appid;
@@ -111,8 +119,8 @@ public class WxServiceImpl implements WxService {
 	public void executeMessge(Map<String, String> params) {
 		log.info("处理微信发送过来的消息， map={}", params);
 		
-		String fromUserName = params.get("FromUserName");//消息来源用户标识
-		String toUserName = params.get("ToUserName");//消息目的用户标识
+		String fromUserName = params.get("FromUserName"); //消息来源用户标识
+		String toUserName = params.get("ToUserName"); //消息目的用户标识
 		String msgType = params.get("MsgType"); //消息类型
 		String event = params.get("Event"); // 事件类型
 		
@@ -122,8 +130,35 @@ public class WxServiceImpl implements WxService {
 				
 				// 不存在则插入，将对应的openid的订阅状态改为已关注
 				log.info("我是订阅事件");
+				TalentmarketMember member = memberMapper.getByOpenid(fromUserName); // 根据openid获取
+				Date now = new Date();
+				if (member == null) {
+					// 不存在则插入
+					member = new TalentmarketMember();
+					member.setUid(UniqueIdUtils.getUUID());
+					member.setOpenid(fromUserName);
+					member.setCredate(now);
+					member.setUpddate(now);
+					member.setSubscribedate(now);
+					memberMapper.insertSelective(member);
+				} else {
+					// 更新订阅状态为关注
+					member = new TalentmarketMember();
+					member.setOpenid(fromUserName);
+					member.setUpddate(now);
+					member.setSubscribedate(now);
+					member.setSubscribeStatus((byte) FinalData.Member.SUBSCIBE_YES);
+					memberMapper.updateByOpenid(member);
+				}
 			} else if (FinalData.Wx.EVENT_UNSUBSCRIBE.equals(event)) { // 取消订阅
 				// 将对应的openid的订阅状态改为取消关注，该粉丝已死
+				TalentmarketMember member = new TalentmarketMember();
+				member.setOpenid(fromUserName);
+				Date now = new Date();
+				member.setUpddate(now);
+				member.setSubscribedate(now);
+				member.setSubscribeStatus((byte) FinalData.Member.SUBSCIBE_NO);
+				memberMapper.updateByOpenid(member);
 			}
 			
 		}

@@ -26,4 +26,10 @@ public class FinalData {
 		public static String EVENT_SUBSCIBE = "subscribe"; // 订阅
 		public static String EVENT_UNSUBSCRIBE = "unsubscribe";// 取消订阅
     }
+
+    public static class Member {
+        // 订阅状态
+        public static int SUBSCIBE_YES = 1; // 已订阅
+        public static int SUBSCIBE_NO = 0; // 未订阅
+    }
 }

@@ -54,6 +54,7 @@ public class TalentmarketMember {
     private Byte subscribeStatus;
 
     private Byte redStatus;
+    private Date subscribedate;
 
     private Date credate;
 
@@ -62,7 +63,6 @@ public class TalentmarketMember {
     public Integer getId() {
         return id;
     }
-
     public void setId(Integer id) {
         this.id = id;
     }
@@ -281,5 +281,13 @@ public class TalentmarketMember {
 
     public void setUpddate(Date upddate) {
         this.upddate = upddate;
+    }
+
+    public Date getSubscribedate() {
+        return subscribedate;
+    }
+
+    public void setSubscribedate(Date subscribedate) {
+        this.subscribedate = subscribedate;
     }
 }

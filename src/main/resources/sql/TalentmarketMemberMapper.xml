@@ -28,13 +28,14 @@
     <result column="isbroker" property="isbroker" jdbcType="TINYINT" />
     <result column="subscribe_status" property="subscribeStatus" jdbcType="TINYINT" />
     <result column="red_status" property="redStatus" jdbcType="TINYINT" />
+    <result column="subscribedate" property="subscribedate" jdbcType="TIMESTAMP" />
     <result column="credate" property="credate" jdbcType="TIMESTAMP" />
     <result column="upddate" property="upddate" jdbcType="TIMESTAMP" />
   </resultMap>
   <sql id="Base_Column_List" >
     id, uid, openid, nickname, headimg, realname, sex, age, idcardno, phone, qq, email, 
     country, province, city, counties, address, level, brokeruid, fopenid, source, fans_num, 
-    totalredmoney, isbroker, subscribe_status, red_status, credate, upddate
+    totalredmoney, isbroker, subscribe_status, red_status, subscribedate, credate, upddate
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
     select 
@@ -55,7 +56,7 @@
       address, level, brokeruid, 
       fopenid, source, fans_num, 
       totalredmoney, isbroker, subscribe_status, 
-      red_status, credate, upddate
+      red_status, subscribedate, credate, upddate
       )
     values (#{id,jdbcType=INTEGER}, #{uid,jdbcType=VARCHAR}, #{openid,jdbcType=VARCHAR}, 
       #{nickname,jdbcType=VARCHAR}, #{headimg,jdbcType=VARCHAR}, #{realname,jdbcType=VARCHAR}, 
@@ -65,7 +66,7 @@
       #{address,jdbcType=VARCHAR}, #{level,jdbcType=TINYINT}, #{brokeruid,jdbcType=VARCHAR}, 
       #{fopenid,jdbcType=VARCHAR}, #{source,jdbcType=TINYINT}, #{fansNum,jdbcType=INTEGER}, 
       #{totalredmoney,jdbcType=BIGINT}, #{isbroker,jdbcType=TINYINT}, #{subscribeStatus,jdbcType=TINYINT}, 
-      #{redStatus,jdbcType=TINYINT}, #{credate,jdbcType=TIMESTAMP}, #{upddate,jdbcType=TIMESTAMP}
+      #{redStatus,jdbcType=TINYINT}, #{subscribedate,jdbcType=TIMESTAMP}, #{credate,jdbcType=TIMESTAMP}, #{upddate,jdbcType=TIMESTAMP}
       )
   </insert>
   <insert id="insertSelective" parameterType="com.bzb.talentmarket.entity.TalentmarketMember" >
@@ -148,6 +149,9 @@
       </if>
       <if test="redStatus != null" >
         red_status,
+      </if>
+      <if test="subscribedate != null" >
+        subscribedate,
       </if>
       <if test="credate != null" >
         credate,
@@ -235,6 +239,9 @@
       <if test="redStatus != null" >
         #{redStatus,jdbcType=TINYINT},
       </if>
+      <if test="subscribedate != null" >
+        #{subscribedate,jdbcType=TIMESTAMP},
+      </if>
       <if test="credate != null" >
         #{credate,jdbcType=TIMESTAMP},
       </if>
@@ -321,6 +328,9 @@
       <if test="redStatus != null" >
         red_status = #{redStatus,jdbcType=TINYINT},
       </if>
+      <if test="subscribedate != null" >
+        subscribedate = #{subscribedate,jdbcType=TIMESTAMP},
+      </if>
       <if test="credate != null" >
         credate = #{credate,jdbcType=TIMESTAMP},
       </if>
@@ -357,8 +367,109 @@
       isbroker = #{isbroker,jdbcType=TINYINT},
       subscribe_status = #{subscribeStatus,jdbcType=TINYINT},
       red_status = #{redStatus,jdbcType=TINYINT},
+      subscribedate = #{subscribedate,jdbcType=TIMESTAMP},
       credate = #{credate,jdbcType=TIMESTAMP},
       upddate = #{upddate,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=INTEGER}
+  </update>
+
+  <!--根据openid获取用户信息-->
+  <select id="getByOpenid" resultMap="BaseResultMap" parameterType="java.lang.String">
+    SELECT <include refid="Base_Column_List"/>
+    FROM tb_talentmarket_member
+    WHERE openid = #{openid}
+    LIMIT 1
+  </select>
+
+  <!--根据openid更新-->
+  <update id="updateByOpenid" parameterType="com.bzb.talentmarket.entity.TalentmarketMember" >
+    update tb_talentmarket_member
+    <set >
+      <if test="uid != null" >
+        uid = #{uid,jdbcType=VARCHAR},
+      </if>
+      <if test="openid != null" >
+        openid = #{openid,jdbcType=VARCHAR},
+      </if>
+      <if test="nickname != null" >
+        nickname = #{nickname,jdbcType=VARCHAR},
+      </if>
+      <if test="headimg != null" >
+        headimg = #{headimg,jdbcType=VARCHAR},
+      </if>
+      <if test="realname != null" >
+        realname = #{realname,jdbcType=VARCHAR},
+      </if>
+      <if test="sex != null" >
+        sex = #{sex,jdbcType=TINYINT},
+      </if>
+      <if test="age != null" >
+        age = #{age,jdbcType=INTEGER},
+      </if>
+      <if test="idcardno != null" >
+        idcardno = #{idcardno,jdbcType=VARCHAR},
+      </if>
+      <if test="phone != null" >
+        phone = #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="qq != null" >
+        qq = #{qq,jdbcType=VARCHAR},
+      </if>
+      <if test="email != null" >
+        email = #{email,jdbcType=VARCHAR},
+      </if>
+      <if test="country != null" >
+        country = #{country,jdbcType=VARCHAR},
+      </if>
+      <if test="province != null" >
+        province = #{province,jdbcType=VARCHAR},
+      </if>
+      <if test="city != null" >
+        city = #{city,jdbcType=VARCHAR},
+      </if>
+      <if test="counties != null" >
+        counties = #{counties,jdbcType=VARCHAR},
+      </if>
+      <if test="address != null" >
+        address = #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="level != null" >
+        level = #{level,jdbcType=TINYINT},
+      </if>
+      <if test="brokeruid != null" >
+        brokeruid = #{brokeruid,jdbcType=VARCHAR},
+      </if>
+      <if test="fopenid != null" >
+        fopenid = #{fopenid,jdbcType=VARCHAR},
+      </if>
+      <if test="source != null" >
+        source = #{source,jdbcType=TINYINT},
+      </if>
+      <if test="fansNum != null" >
+        fans_num = #{fansNum,jdbcType=INTEGER},
+      </if>
+      <if test="totalredmoney != null" >
+        totalredmoney = #{totalredmoney,jdbcType=BIGINT},
+      </if>
+      <if test="isbroker != null" >
+        isbroker = #{isbroker,jdbcType=TINYINT},
+      </if>
+      <if test="subscribeStatus != null" >
+        subscribe_status = #{subscribeStatus,jdbcType=TINYINT},
+      </if>
+      <if test="redStatus != null" >
+        red_status = #{redStatus,jdbcType=TINYINT},
+      </if>
+      <if test="subscribedate != null" >
+        subscribedate = #{subscribedate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="credate != null" >
+        credate = #{credate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="upddate != null" >
+        upddate = #{upddate,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where openid = #{openid,jdbcType=VARCHAR}
   </update>
 </mapper>
