@@ -14,28 +14,43 @@
     <result column="phone" property="phone" jdbcType="VARCHAR" />
     <result column="qq" property="qq" jdbcType="VARCHAR" />
     <result column="email" property="email" jdbcType="VARCHAR" />
+    <result column="headimgurl" property="headimgurl" jdbcType="VARCHAR" />
+    <result column="yuyan" property="yuyan" jdbcType="VARCHAR" />
     <result column="country" property="country" jdbcType="VARCHAR" />
     <result column="province" property="province" jdbcType="VARCHAR" />
     <result column="city" property="city" jdbcType="VARCHAR" />
     <result column="counties" property="counties" jdbcType="VARCHAR" />
     <result column="address" property="address" jdbcType="VARCHAR" />
-    <result column="level" property="level" jdbcType="TINYINT" />
+    <result column="memberlevel" property="memberlevel" jdbcType="TINYINT" />
     <result column="brokeruid" property="brokeruid" jdbcType="VARCHAR" />
     <result column="fopenid" property="fopenid" jdbcType="VARCHAR" />
-    <result column="source" property="source" jdbcType="TINYINT" />
+    <result column="unionid" property="unionid" jdbcType="VARCHAR" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+    <result column="groupid" property="groupid" jdbcType="INTEGER" />
+    <result column="tagid_list" property="tagidList" jdbcType="VARCHAR" />
+    <result column="subscribe_scene" property="subscribeScene" jdbcType="VARCHAR" />
+    <result column="qr_scene" property="qrScene" jdbcType="INTEGER" />
+    <result column="qr_scene_str" property="qrSceneStr" jdbcType="VARCHAR" />
+    <result column="qrcode" property="qrcode" jdbcType="VARCHAR" />
     <result column="fans_num" property="fansNum" jdbcType="INTEGER" />
     <result column="totalredmoney" property="totalredmoney" jdbcType="BIGINT" />
     <result column="isbroker" property="isbroker" jdbcType="TINYINT" />
     <result column="subscribe_status" property="subscribeStatus" jdbcType="TINYINT" />
     <result column="red_status" property="redStatus" jdbcType="TINYINT" />
-    <result column="subscribedate" property="subscribedate" jdbcType="TIMESTAMP" />
+    <result column="subscribedate" property="subscribedate" jdbcType="BIGINT" />
+    <result column="latitude" property="latitude" jdbcType="DOUBLE" />
+    <result column="longitude" property="longitude" jdbcType="DOUBLE" />
+    <result column="precision" property="precision" jdbcType="DOUBLE" />
+
     <result column="credate" property="credate" jdbcType="TIMESTAMP" />
     <result column="upddate" property="upddate" jdbcType="TIMESTAMP" />
   </resultMap>
   <sql id="Base_Column_List" >
-    id, uid, openid, nickname, headimg, realname, sex, age, idcardno, phone, qq, email, 
-    country, province, city, counties, address, level, brokeruid, fopenid, source, fans_num, 
-    totalredmoney, isbroker, subscribe_status, red_status, subscribedate, credate, upddate
+    id, uid, openid, nickname, realname, sex, age, idcardno, phone, qq, email,
+    headimgurl, `yuyan`, country, province, city, counties, address, memberlevel, brokeruid,
+    fopenid, unionid, remark, groupid, tagid_list, subscribe_scene, qr_scene, qr_scene_str, 
+    qrcode, fans_num, totalredmoney, isbroker, subscribe_status, red_status, subscribedate,
+    `geoglatitude`, `geoglongitude`, `geogprecision`, credate, upddate
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
     select 
@@ -43,31 +58,47 @@
     from tb_talentmarket_member
     where id = #{id,jdbcType=INTEGER}
   </select>
+
+  <!--根据openid获取会员信息-->
+  <select id="getByOpenid" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select
+    <include refid="Base_Column_List" />
+    from tb_talentmarket_member
+    where openid = #{openid,jdbcType=VARCHAR}
+  </select>
+
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
     delete from tb_talentmarket_member
     where id = #{id,jdbcType=INTEGER}
   </delete>
   <insert id="insert" parameterType="com.bzb.talentmarket.entity.TalentmarketMember" >
     insert into tb_talentmarket_member (id, uid, openid, 
-      nickname, headimg, realname, 
+      nickname, realname,
       sex, age, idcardno, 
-      phone, qq, email, country, 
-      province, city, counties, 
-      address, level, brokeruid, 
-      fopenid, source, fans_num, 
+      phone, qq, email, headimgurl, 
+      yuyan, country, province,
+      city, counties, address, 
+      memberlevel, brokeruid, fopenid,
+      unionid, remark, groupid, 
+      tagid_list, subscribe_scene, qr_scene, 
+      qr_scene_str, qrcode, fans_num, 
       totalredmoney, isbroker, subscribe_status, 
-      red_status, subscribedate, credate, upddate
-      )
+      red_status, subscribedate, geoglatitude, geoglongitude,
+      geogprecision, credate, upddate)
     values (#{id,jdbcType=INTEGER}, #{uid,jdbcType=VARCHAR}, #{openid,jdbcType=VARCHAR}, 
-      #{nickname,jdbcType=VARCHAR}, #{headimg,jdbcType=VARCHAR}, #{realname,jdbcType=VARCHAR}, 
+      #{nickname,jdbcType=VARCHAR}, #{realname,jdbcType=VARCHAR},
       #{sex,jdbcType=TINYINT}, #{age,jdbcType=INTEGER}, #{idcardno,jdbcType=VARCHAR}, 
-      #{phone,jdbcType=VARCHAR}, #{qq,jdbcType=VARCHAR}, #{email,jdbcType=VARCHAR}, #{country,jdbcType=VARCHAR}, 
-      #{province,jdbcType=VARCHAR}, #{city,jdbcType=VARCHAR}, #{counties,jdbcType=VARCHAR}, 
-      #{address,jdbcType=VARCHAR}, #{level,jdbcType=TINYINT}, #{brokeruid,jdbcType=VARCHAR}, 
-      #{fopenid,jdbcType=VARCHAR}, #{source,jdbcType=TINYINT}, #{fansNum,jdbcType=INTEGER}, 
+      #{phone,jdbcType=VARCHAR}, #{qq,jdbcType=VARCHAR}, #{email,jdbcType=VARCHAR}, #{headimgurl,jdbcType=VARCHAR}, 
+      #{yuyan,jdbcType=VARCHAR}, #{country,jdbcType=VARCHAR}, #{province,jdbcType=VARCHAR},
+      #{city,jdbcType=VARCHAR}, #{counties,jdbcType=VARCHAR}, #{address,jdbcType=VARCHAR}, 
+      #{memberlevel,jdbcType=TINYINT}, #{brokeruid,jdbcType=VARCHAR}, #{fopenid,jdbcType=VARCHAR},
+      #{unionid,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR}, #{groupid,jdbcType=INTEGER},
+      #{tagidList,jdbcType=VARCHAR}, #{subscribeScene,jdbcType=VARCHAR}, #{qrScene,jdbcType=INTEGER},
+      #{qrSceneStr,jdbcType=VARCHAR}, #{qrcode,jdbcType=VARCHAR}, #{fansNum,jdbcType=INTEGER}, 
       #{totalredmoney,jdbcType=BIGINT}, #{isbroker,jdbcType=TINYINT}, #{subscribeStatus,jdbcType=TINYINT}, 
-      #{redStatus,jdbcType=TINYINT}, #{subscribedate,jdbcType=TIMESTAMP}, #{credate,jdbcType=TIMESTAMP}, #{upddate,jdbcType=TIMESTAMP}
-      )
+      #{redStatus,jdbcType=TINYINT}, #{subscribedate,jdbcType=BIGINT}, #{geoglatitude,jdbcType=DOUBLE},
+      #{geoglatitude,jdbcType=DOUBLE}, #{geoglongitude,jdbcType=DOUBLE}, #{geogprecision,jdbcType=DOUBLE},
+      #{credate,jdbcType=TIMESTAMP}, #{upddate,jdbcType=TIMESTAMP})
   </insert>
   <insert id="insertSelective" parameterType="com.bzb.talentmarket.entity.TalentmarketMember" >
     insert into tb_talentmarket_member
@@ -83,9 +114,6 @@
       </if>
       <if test="nickname != null" >
         nickname,
-      </if>
-      <if test="headimg != null" >
-        headimg,
       </if>
       <if test="realname != null" >
         realname,
@@ -108,6 +136,12 @@
       <if test="email != null" >
         email,
       </if>
+      <if test="headimgurl != null" >
+        headimgurl,
+      </if>
+      <if test="yuyan != null" >
+        yuyan,
+      </if>
       <if test="country != null" >
         country,
       </if>
@@ -123,8 +157,8 @@
       <if test="address != null" >
         address,
       </if>
-      <if test="level != null" >
-        level,
+      <if test="memberlevel != null" >
+        memberlevel,
       </if>
       <if test="brokeruid != null" >
         brokeruid,
@@ -132,8 +166,29 @@
       <if test="fopenid != null" >
         fopenid,
       </if>
-      <if test="source != null" >
-        source,
+      <if test="unionid != null" >
+        unionid,
+      </if>
+      <if test="remark != null" >
+        remark,
+      </if>
+      <if test="groupid != null" >
+        groupid,
+      </if>
+      <if test="tagidList != null" >
+        tagid_list,
+      </if>
+      <if test="subscribeScene != null" >
+        subscribe_scene,
+      </if>
+      <if test="qrScene != null" >
+        qr_scene,
+      </if>
+      <if test="qrSceneStr != null" >
+        qr_scene_str,
+      </if>
+      <if test="qrcode != null" >
+        qrcode,
       </if>
       <if test="fansNum != null" >
         fans_num,
@@ -152,6 +207,15 @@
       </if>
       <if test="subscribedate != null" >
         subscribedate,
+      </if>
+      <if test="geoglatitude != null" >
+        geoglatitude,
+      </if>
+      <if test="geoglongitude != null" >
+        geoglongitude,
+      </if>
+      <if test="geogprecision != null" >
+        geogprecision,
       </if>
       <if test="credate != null" >
         credate,
@@ -172,9 +236,6 @@
       </if>
       <if test="nickname != null" >
         #{nickname,jdbcType=VARCHAR},
-      </if>
-      <if test="headimg != null" >
-        #{headimg,jdbcType=VARCHAR},
       </if>
       <if test="realname != null" >
         #{realname,jdbcType=VARCHAR},
@@ -197,6 +258,12 @@
       <if test="email != null" >
         #{email,jdbcType=VARCHAR},
       </if>
+      <if test="headimgurl != null" >
+        #{headimgurl,jdbcType=VARCHAR},
+      </if>
+      <if test="yuyan != null" >
+        #{yuyan,jdbcType=VARCHAR},
+      </if>
       <if test="country != null" >
         #{country,jdbcType=VARCHAR},
       </if>
@@ -212,8 +279,8 @@
       <if test="address != null" >
         #{address,jdbcType=VARCHAR},
       </if>
-      <if test="level != null" >
-        #{level,jdbcType=TINYINT},
+      <if test="memberlevel != null" >
+        #{memberlevel,jdbcType=TINYINT},
       </if>
       <if test="brokeruid != null" >
         #{brokeruid,jdbcType=VARCHAR},
@@ -221,8 +288,29 @@
       <if test="fopenid != null" >
         #{fopenid,jdbcType=VARCHAR},
       </if>
-      <if test="source != null" >
-        #{source,jdbcType=TINYINT},
+      <if test="unionid != null" >
+        #{unionid,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="groupid != null" >
+        #{groupid,jdbcType=INTEGER},
+      </if>
+      <if test="tagidList != null" >
+        #{tagidList,jdbcType=VARCHAR},
+      </if>
+      <if test="subscribeScene != null" >
+        #{subscribeScene,jdbcType=VARCHAR},
+      </if>
+      <if test="qrScene != null" >
+        #{qrScene,jdbcType=VARCHAR},
+      </if>
+      <if test="qrSceneStr != null" >
+        #{qrSceneStr,jdbcType=VARCHAR},
+      </if>
+      <if test="qrcode != null" >
+        #{qrcode,jdbcType=VARCHAR},
       </if>
       <if test="fansNum != null" >
         #{fansNum,jdbcType=INTEGER},
@@ -240,7 +328,16 @@
         #{redStatus,jdbcType=TINYINT},
       </if>
       <if test="subscribedate != null" >
-        #{subscribedate,jdbcType=TIMESTAMP},
+        #{subscribedate,jdbcType=BIGINT},
+      </if>
+      <if test="geoglatitude != null" >
+        #{geoglatitude,jdbcType=DOUBLE},
+      </if>
+      <if test="geoglongitude != null" >
+        #{geoglongitude,jdbcType=DOUBLE},
+      </if>
+      <if test="geogprecision != null" >
+        #{geogprecision,jdbcType=DOUBLE},
       </if>
       <if test="credate != null" >
         #{credate,jdbcType=TIMESTAMP},
@@ -262,9 +359,6 @@
       <if test="nickname != null" >
         nickname = #{nickname,jdbcType=VARCHAR},
       </if>
-      <if test="headimg != null" >
-        headimg = #{headimg,jdbcType=VARCHAR},
-      </if>
       <if test="realname != null" >
         realname = #{realname,jdbcType=VARCHAR},
       </if>
@@ -286,6 +380,12 @@
       <if test="email != null" >
         email = #{email,jdbcType=VARCHAR},
       </if>
+      <if test="headimgurl != null" >
+        headimgurl = #{headimgurl,jdbcType=VARCHAR},
+      </if>
+      <if test="yuyan != null" >
+        yuyan = #{language,jdbcType=VARCHAR},
+      </if>
       <if test="country != null" >
         country = #{country,jdbcType=VARCHAR},
       </if>
@@ -301,8 +401,8 @@
       <if test="address != null" >
         address = #{address,jdbcType=VARCHAR},
       </if>
-      <if test="level != null" >
-        level = #{level,jdbcType=TINYINT},
+      <if test="memberlevel != null" >
+        memberlevel = #{memberlevel,jdbcType=TINYINT},
       </if>
       <if test="brokeruid != null" >
         brokeruid = #{brokeruid,jdbcType=VARCHAR},
@@ -310,8 +410,29 @@
       <if test="fopenid != null" >
         fopenid = #{fopenid,jdbcType=VARCHAR},
       </if>
-      <if test="source != null" >
-        source = #{source,jdbcType=TINYINT},
+      <if test="unionid != null" >
+        unionid = #{unionid,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="groupid != null" >
+        groupid = #{groupid,jdbcType=INTEGER},
+      </if>
+      <if test="tagidList != null" >
+        tagid_list = #{tagidList,jdbcType=VARCHAR},
+      </if>
+      <if test="subscribeScene != null" >
+        subscribe_scene = #{subscribeScene,jdbcType=VARCHAR},
+      </if>
+      <if test="qrScene != null" >
+        qr_scene = #{qrScene,jdbcType=INTEGER},
+      </if>
+      <if test="qrSceneStr != null" >
+        qr_scene_str = #{qrSceneStr,jdbcType=VARCHAR},
+      </if>
+      <if test="qrcode != null" >
+        qrcode = #{qrcode,jdbcType=VARCHAR},
       </if>
       <if test="fansNum != null" >
         fans_num = #{fansNum,jdbcType=INTEGER},
@@ -329,7 +450,16 @@
         red_status = #{redStatus,jdbcType=TINYINT},
       </if>
       <if test="subscribedate != null" >
-        subscribedate = #{subscribedate,jdbcType=TIMESTAMP},
+        subscribedate = #{subscribedate,jdbcType=BIGINT},
+      </if>
+      <if test="geoglatitude != null" >
+        geoglatitude = #{geoglatitude,jdbcType=DOUBLE},
+      </if>
+      <if test="geoglongitude != null" >
+        geoglongitude = #{geoglongitude,jdbcType=DOUBLE},
+      </if>
+      <if test="geogprecision != null" >
+        geogprecision = #{geogprecision,jdbcType=DOUBLE},
       </if>
       <if test="credate != null" >
         credate = #{credate,jdbcType=TIMESTAMP},
@@ -340,46 +470,6 @@
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.bzb.talentmarket.entity.TalentmarketMember" >
-    update tb_talentmarket_member
-    set uid = #{uid,jdbcType=VARCHAR},
-      openid = #{openid,jdbcType=VARCHAR},
-      nickname = #{nickname,jdbcType=VARCHAR},
-      headimg = #{headimg,jdbcType=VARCHAR},
-      realname = #{realname,jdbcType=VARCHAR},
-      sex = #{sex,jdbcType=TINYINT},
-      age = #{age,jdbcType=INTEGER},
-      idcardno = #{idcardno,jdbcType=VARCHAR},
-      phone = #{phone,jdbcType=VARCHAR},
-      qq = #{qq,jdbcType=VARCHAR},
-      email = #{email,jdbcType=VARCHAR},
-      country = #{country,jdbcType=VARCHAR},
-      province = #{province,jdbcType=VARCHAR},
-      city = #{city,jdbcType=VARCHAR},
-      counties = #{counties,jdbcType=VARCHAR},
-      address = #{address,jdbcType=VARCHAR},
-      level = #{level,jdbcType=TINYINT},
-      brokeruid = #{brokeruid,jdbcType=VARCHAR},
-      fopenid = #{fopenid,jdbcType=VARCHAR},
-      source = #{source,jdbcType=TINYINT},
-      fans_num = #{fansNum,jdbcType=INTEGER},
-      totalredmoney = #{totalredmoney,jdbcType=BIGINT},
-      isbroker = #{isbroker,jdbcType=TINYINT},
-      subscribe_status = #{subscribeStatus,jdbcType=TINYINT},
-      red_status = #{redStatus,jdbcType=TINYINT},
-      subscribedate = #{subscribedate,jdbcType=TIMESTAMP},
-      credate = #{credate,jdbcType=TIMESTAMP},
-      upddate = #{upddate,jdbcType=TIMESTAMP}
-    where id = #{id,jdbcType=INTEGER}
-  </update>
-
-  <!--根据openid获取用户信息-->
-  <select id="getByOpenid" resultMap="BaseResultMap" parameterType="java.lang.String">
-    SELECT <include refid="Base_Column_List"/>
-    FROM tb_talentmarket_member
-    WHERE openid = #{openid}
-    LIMIT 1
-  </select>
 
   <!--根据openid更新-->
   <update id="updateByOpenid" parameterType="com.bzb.talentmarket.entity.TalentmarketMember" >
@@ -394,9 +484,6 @@
       <if test="nickname != null" >
         nickname = #{nickname,jdbcType=VARCHAR},
       </if>
-      <if test="headimg != null" >
-        headimg = #{headimg,jdbcType=VARCHAR},
-      </if>
       <if test="realname != null" >
         realname = #{realname,jdbcType=VARCHAR},
       </if>
@@ -418,6 +505,12 @@
       <if test="email != null" >
         email = #{email,jdbcType=VARCHAR},
       </if>
+      <if test="headimgurl != null" >
+        headimgurl = #{headimgurl,jdbcType=VARCHAR},
+      </if>
+      <if test="yuyan != null" >
+        yuyan = #{yuyan,jdbcType=VARCHAR},
+      </if>
       <if test="country != null" >
         country = #{country,jdbcType=VARCHAR},
       </if>
@@ -433,8 +526,8 @@
       <if test="address != null" >
         address = #{address,jdbcType=VARCHAR},
       </if>
-      <if test="level != null" >
-        level = #{level,jdbcType=TINYINT},
+      <if test="memberlevel != null" >
+        memberlevel = #{memberlevel,jdbcType=TINYINT},
       </if>
       <if test="brokeruid != null" >
         brokeruid = #{brokeruid,jdbcType=VARCHAR},
@@ -442,8 +535,29 @@
       <if test="fopenid != null" >
         fopenid = #{fopenid,jdbcType=VARCHAR},
       </if>
-      <if test="source != null" >
-        source = #{source,jdbcType=TINYINT},
+      <if test="unionid != null" >
+        unionid = #{unionid,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="groupid != null" >
+        groupid = #{groupid,jdbcType=INTEGER},
+      </if>
+      <if test="tagidList != null" >
+        tagid_list = #{tagidList,jdbcType=VARCHAR},
+      </if>
+      <if test="subscribeScene != null" >
+        subscribe_scene = #{subscribeScene,jdbcType=VARCHAR},
+      </if>
+      <if test="qrScene != null" >
+        qr_scene = #{qrScene,jdbcType=INTEGER},
+      </if>
+      <if test="qrSceneStr != null" >
+        qr_scene_str = #{qrSceneStr,jdbcType=VARCHAR},
+      </if>
+      <if test="qrcode != null" >
+        qrcode = #{qrcode,jdbcType=VARCHAR},
       </if>
       <if test="fansNum != null" >
         fans_num = #{fansNum,jdbcType=INTEGER},
@@ -461,7 +575,16 @@
         red_status = #{redStatus,jdbcType=TINYINT},
       </if>
       <if test="subscribedate != null" >
-        subscribedate = #{subscribedate,jdbcType=TIMESTAMP},
+        subscribedate = #{subscribedate,jdbcType=BIGINT},
+      </if>
+      <if test="geoglatitude != null" >
+        geoglatitude = #{geoglatitude,jdbcType=DOUBLE},
+      </if>
+      <if test="geoglongitude != null" >
+        geoglongitude = #{geoglongitude,jdbcType=DOUBLE},
+      </if>
+      <if test="geogprecision != null" >
+        geogprecision = #{geogprecision,jdbcType=DOUBLE},
       </if>
       <if test="credate != null" >
         credate = #{credate,jdbcType=TIMESTAMP},
@@ -471,5 +594,56 @@
       </if>
     </set>
     where openid = #{openid,jdbcType=VARCHAR}
+  </update>
+
+  <update id="updateByPrimaryKey" parameterType="com.bzb.talentmarket.entity.TalentmarketMember" >
+    update tb_talentmarket_member
+    set uid = #{uid,jdbcType=VARCHAR},
+      openid = #{openid,jdbcType=VARCHAR},
+      nickname = #{nickname,jdbcType=VARCHAR},
+      realname = #{realname,jdbcType=VARCHAR},
+      sex = #{sex,jdbcType=TINYINT},
+      age = #{age,jdbcType=INTEGER},
+      idcardno = #{idcardno,jdbcType=VARCHAR},
+      phone = #{phone,jdbcType=VARCHAR},
+      qq = #{qq,jdbcType=VARCHAR},
+      email = #{email,jdbcType=VARCHAR},
+      headimgurl = #{headimgurl,jdbcType=VARCHAR},
+      yuyan = #{yuyan,jdbcType=VARCHAR},
+      country = #{country,jdbcType=VARCHAR},
+      province = #{province,jdbcType=VARCHAR},
+      city = #{city,jdbcType=VARCHAR},
+      counties = #{counties,jdbcType=VARCHAR},
+      address = #{address,jdbcType=VARCHAR},
+      memberlevel = #{memberlevel,jdbcType=TINYINT},
+      brokeruid = #{brokeruid,jdbcType=VARCHAR},
+      fopenid = #{fopenid,jdbcType=VARCHAR},
+      unionid = #{unionid,jdbcType=VARCHAR},
+      remark = #{remark,jdbcType=VARCHAR},
+      groupid = #{groupid,jdbcType=INTEGER},
+      tagid_list = #{tagidList,jdbcType=VARCHAR},
+      subscribe_scene = #{subscribeScene,jdbcType=VARCHAR},
+      qr_scene = #{qrScene,jdbcType=INTEGER},
+      qr_scene_str = #{qrSceneStr,jdbcType=VARCHAR},
+      qrcode = #{qrcode,jdbcType=VARCHAR},
+      fans_num = #{fansNum,jdbcType=INTEGER},
+      totalredmoney = #{totalredmoney,jdbcType=BIGINT},
+      isbroker = #{isbroker,jdbcType=TINYINT},
+      subscribe_status = #{subscribeStatus,jdbcType=TINYINT},
+      red_status = #{redStatus,jdbcType=TINYINT},
+      subscribedate = #{subscribedate,jdbcType=BIGINT},
+      geoglatitude = #{geoglatitude,jdbcType=DOUBLE},
+      geoglongitude = #{geoglongitude,jdbcType=DOUBLE},
+      geogprecision = #{geogprecision,jdbcType=DOUBLE},
+      credate = #{credate,jdbcType=TIMESTAMP},
+      upddate = #{upddate,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+  <!--更新推荐者的相关粉丝信息-->
+  <update id="updateFans">
+    UPDATE tb_talentmarket_member
+    SET fans_num = fans_num + 1, totalredmoney = totalredmoney + ${randMoney,jdbcType=BIGINT}, upddate = NOW()
+    WHERE openid = #{openid,jdbcType=VARCHAR}
   </update>
 </mapper>

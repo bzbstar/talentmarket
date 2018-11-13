@@ -11,8 +11,6 @@ public class TalentmarketMember {
 
     private String nickname;
 
-    private String headimg;
-
     private String realname;
 
     private Byte sex;
@@ -27,6 +25,10 @@ public class TalentmarketMember {
 
     private String email;
 
+    private String headimgurl;
+
+    private String yuyan;
+
     private String country;
 
     private String province;
@@ -37,13 +39,27 @@ public class TalentmarketMember {
 
     private String address;
 
-    private Byte level;
+    private Byte memberlevel;
 
     private String brokeruid;
 
     private String fopenid;
 
-    private Byte source;
+    private String unionid;
+
+    private String remark;
+
+    private Integer groupid;
+
+    private String tagidList;
+
+    private String subscribeScene;
+
+    private Integer qrScene;
+
+    private String qrSceneStr;
+
+    private String qrcode;
 
     private Integer fansNum;
 
@@ -54,7 +70,13 @@ public class TalentmarketMember {
     private Byte subscribeStatus;
 
     private Byte redStatus;
-    private Date subscribedate;
+
+    private Long subscribedate;
+
+    // 粉丝地理位置
+    private Double geoglatitude;
+    private Double geoglongitude;
+    private Double geogprecision;
 
     private Date credate;
 
@@ -63,6 +85,7 @@ public class TalentmarketMember {
     public Integer getId() {
         return id;
     }
+
     public void setId(Integer id) {
         this.id = id;
     }
@@ -89,14 +112,6 @@ public class TalentmarketMember {
 
     public void setNickname(String nickname) {
         this.nickname = nickname == null ? null : nickname.trim();
-    }
-
-    public String getHeadimg() {
-        return headimg;
-    }
-
-    public void setHeadimg(String headimg) {
-        this.headimg = headimg == null ? null : headimg.trim();
     }
 
     public String getRealname() {
@@ -155,6 +170,22 @@ public class TalentmarketMember {
         this.email = email == null ? null : email.trim();
     }
 
+    public String getHeadimgurl() {
+        return headimgurl;
+    }
+
+    public void setHeadimgurl(String headimgurl) {
+        this.headimgurl = headimgurl == null ? null : headimgurl.trim();
+    }
+
+    public String getYuyan() {
+        return yuyan;
+    }
+
+    public void setYuyan(String yuyan) {
+        this.yuyan = yuyan;
+    }
+
     public String getCountry() {
         return country;
     }
@@ -195,12 +226,12 @@ public class TalentmarketMember {
         this.address = address == null ? null : address.trim();
     }
 
-    public Byte getLevel() {
-        return level;
+    public Byte getMemberlevel() {
+        return memberlevel;
     }
 
-    public void setLevel(Byte level) {
-        this.level = level;
+    public void setMemberlevel(Byte memberlevel) {
+        this.memberlevel = memberlevel;
     }
 
     public String getBrokeruid() {
@@ -219,12 +250,68 @@ public class TalentmarketMember {
         this.fopenid = fopenid == null ? null : fopenid.trim();
     }
 
-    public Byte getSource() {
-        return source;
+    public String getUnionid() {
+        return unionid;
     }
 
-    public void setSource(Byte source) {
-        this.source = source;
+    public void setUnionid(String unionid) {
+        this.unionid = unionid == null ? null : unionid.trim();
+    }
+
+    public String getRemark() {
+        return remark;
+    }
+
+    public void setRemark(String remark) {
+        this.remark = remark == null ? null : remark.trim();
+    }
+
+    public Integer getGroupid() {
+        return groupid;
+    }
+
+    public void setGroupid(Integer groupid) {
+        this.groupid = groupid;
+    }
+
+    public String getTagidList() {
+        return tagidList;
+    }
+
+    public void setTagidList(String tagidList) {
+        this.tagidList = tagidList == null ? null : tagidList.trim();
+    }
+
+    public String getSubscribeScene() {
+        return subscribeScene;
+    }
+
+    public void setSubscribeScene(String subscribeScene) {
+        this.subscribeScene = subscribeScene == null ? null : subscribeScene.trim();
+    }
+
+    public Integer getQrScene() {
+        return qrScene;
+    }
+
+    public void setQrScene(Integer qrScene) {
+        this.qrScene = qrScene;
+    }
+
+    public String getQrSceneStr() {
+        return qrSceneStr;
+    }
+
+    public void setQrSceneStr(String qrSceneStr) {
+        this.qrSceneStr = qrSceneStr == null ? null : qrSceneStr.trim();
+    }
+
+    public String getQrcode() {
+        return qrcode;
+    }
+
+    public void setQrcode(String qrcode) {
+        this.qrcode = qrcode == null ? null : qrcode.trim();
     }
 
     public Integer getFansNum() {
@@ -267,6 +354,14 @@ public class TalentmarketMember {
         this.redStatus = redStatus;
     }
 
+    public Long getSubscribedate() {
+        return subscribedate;
+    }
+
+    public void setSubscribedate(Long subscribedate) {
+        this.subscribedate = subscribedate;
+    }
+
     public Date getCredate() {
         return credate;
     }
@@ -283,11 +378,73 @@ public class TalentmarketMember {
         this.upddate = upddate;
     }
 
-    public Date getSubscribedate() {
-        return subscribedate;
+    public Double getGeoglatitude() {
+        return geoglatitude;
     }
 
-    public void setSubscribedate(Date subscribedate) {
-        this.subscribedate = subscribedate;
+    public void setGeoglatitude(Double geoglatitude) {
+        this.geoglatitude = geoglatitude;
+    }
+
+    public Double getGeoglongitude() {
+        return geoglongitude;
+    }
+
+    public void setGeoglongitude(Double geoglongitude) {
+        this.geoglongitude = geoglongitude;
+    }
+
+    public Double getGeogprecision() {
+        return geogprecision;
+    }
+
+    public void setGeogprecision(Double geogprecision) {
+        this.geogprecision = geogprecision;
+    }
+
+    @Override
+    public String toString() {
+        return "TalentmarketMember{" +
+                "id=" + id +
+                ", uid='" + uid + '\'' +
+                ", openid='" + openid + '\'' +
+                ", nickname='" + nickname + '\'' +
+                ", realname='" + realname + '\'' +
+                ", sex=" + sex +
+                ", age=" + age +
+                ", idcardno='" + idcardno + '\'' +
+                ", phone='" + phone + '\'' +
+                ", qq='" + qq + '\'' +
+                ", email='" + email + '\'' +
+                ", headimgurl='" + headimgurl + '\'' +
+                ", yuyan='" + yuyan + '\'' +
+                ", country='" + country + '\'' +
+                ", province='" + province + '\'' +
+                ", city='" + city + '\'' +
+                ", counties='" + counties + '\'' +
+                ", address='" + address + '\'' +
+                ", memberlevel=" + memberlevel +
+                ", brokeruid='" + brokeruid + '\'' +
+                ", fopenid='" + fopenid + '\'' +
+                ", unionid='" + unionid + '\'' +
+                ", remark='" + remark + '\'' +
+                ", groupid=" + groupid +
+                ", tagidList='" + tagidList + '\'' +
+                ", subscribeScene='" + subscribeScene + '\'' +
+                ", qrScene=" + qrScene +
+                ", qrSceneStr='" + qrSceneStr + '\'' +
+                ", qrcode='" + qrcode + '\'' +
+                ", fansNum=" + fansNum +
+                ", totalredmoney=" + totalredmoney +
+                ", isbroker=" + isbroker +
+                ", subscribeStatus=" + subscribeStatus +
+                ", redStatus=" + redStatus +
+                ", subscribedate=" + subscribedate +
+                ", geoglatitude=" + geoglatitude +
+                ", geoglongitude=" + geoglongitude +
+                ", geogprecision=" + geogprecision +
+                ", credate=" + credate +
+                ", upddate=" + upddate +
+                '}';
     }
 }

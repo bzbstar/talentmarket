@@ -14,4 +14,10 @@ public interface TalentmarketGamerulesMapper {
     int updateByPrimaryKeySelective(TalentmarketGamerules record);
 
     int updateByPrimaryKey(TalentmarketGamerules record);
+
+    /**
+     * 获取华山路的半径映射范围
+     * @return
+     */
+    TalentmarketGamerules getDistinceAndRed();
 }

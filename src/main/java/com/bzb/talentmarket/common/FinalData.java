@@ -25,11 +25,19 @@ public class FinalData {
     	// 事件类型
 		public static String EVENT_SUBSCIBE = "subscribe"; // 订阅
 		public static String EVENT_UNSUBSCRIBE = "unsubscribe";// 取消订阅
+        public static String EVENT_LOCATION = "LOCATION"; // 地理位置上报
+
+        // 扫码事件， 用户未关注时的事件推送为subscribe
+        public static String EVENT_SCAN = "SCAN"; // 用户已关注时的事件推送为SCAN
     }
 
     public static class Member {
         // 订阅状态
         public static int SUBSCIBE_YES = 1; // 已订阅
         public static int SUBSCIBE_NO = 0; // 未订阅
+
+        // 随机红包领取状态
+        public static int REDSTATUS_DRAWED = 1; // 已领取
+        public static int REDSTATUS_UNCLAINMED = 0; // 未领取
     }
 }

@@ -1,28 +1,31 @@
 package com.bzb.talentmarket.service.impl;
 
 import java.io.UnsupportedEncodingException;
-import java.lang.reflect.Member;
 import java.net.URLEncoder;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
+import com.bzb.talentmarket.entity.TalentmarketGamerules;
 import com.bzb.talentmarket.entity.TalentmarketMember;
+import com.bzb.talentmarket.mapper.TalentmarketGamerulesMapper;
 import com.bzb.talentmarket.mapper.TalentmarketMemberMapper;
+import com.bzb.talentmarket.mapper.UserMapper;
+import com.bzb.talentmarket.utils.JsonUtils;
 import com.bzb.talentmarket.utils.UniqueIdUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 
 import com.bzb.talentmarket.common.FinalData;
 import com.bzb.talentmarket.exception.WxApiException;
 import com.bzb.talentmarket.service.WxService;
 import com.bzb.talentmarket.utils.CommonUtils;
-
-import sun.management.resources.agent;
 
 /**
  * 
@@ -34,12 +37,19 @@ import sun.management.resources.agent;
 public class WxServiceImpl implements WxService {
 	
 	private static final Logger log = LoggerFactory.getLogger(WxServiceImpl.class);
+
+	// 华山路人才市场经纬度， 腾讯高德地图显示
+	private double hslLatitude = 31.3123300000; // 纬度
+	private double hslLongitude = 120.5356100000; // 精度
 	
 	@Autowired
 	private RestTemplate restTemplate;
 
 	@Autowired
 	private TalentmarketMemberMapper memberMapper;
+
+	@Autowired
+	private TalentmarketGamerulesMapper gamerulesMapper;
 
 	@Value("${wx_appid}")
 	private String appid;
@@ -123,48 +133,258 @@ public class WxServiceImpl implements WxService {
 		String toUserName = params.get("ToUserName"); //消息目的用户标识
 		String msgType = params.get("MsgType"); //消息类型
 		String event = params.get("Event"); // 事件类型
+		String scene = CommonUtils.objToStr(params.get("EventKey")); // 扫描场景值
 		
 		if (FinalData.Wx.MSGTYPE_EVENT.equals(msgType)) { // 事件类型
 			
-			if (FinalData.Wx.EVENT_SUBSCIBE.equals(event)) { // 订阅事件
-				
-				// 不存在则插入，将对应的openid的订阅状态改为已关注
-				log.info("我是订阅事件");
-				TalentmarketMember member = memberMapper.getByOpenid(fromUserName); // 根据openid获取
-				Date now = new Date();
-				if (member == null) {
-					// 不存在则插入
-					member = new TalentmarketMember();
-					member.setUid(UniqueIdUtils.getUUID());
-					member.setOpenid(fromUserName);
-					member.setCredate(now);
-					member.setUpddate(now);
-					member.setSubscribedate(now);
-					memberMapper.insertSelective(member);
-				} else {
-					// 更新订阅状态为关注
-					member = new TalentmarketMember();
-					member.setOpenid(fromUserName);
-					member.setUpddate(now);
-					member.setSubscribedate(now);
-					member.setSubscribeStatus((byte) FinalData.Member.SUBSCIBE_YES);
-					memberMapper.updateByOpenid(member);
+			if (FinalData.Wx.EVENT_SUBSCIBE.equals(event)) { // 订阅事件，调用微信接口获取用户的基本信息
+
+				log.info("关注事件推送，openid={}", fromUserName);
+				subscibe(fromUserName);
+
+				if (params.containsKey("Ticket")) { // 扫码关注事件
+					log.info("扫码关注事件， ticket={}", CommonUtils.objToStr(params.get("Ticket")));
+
+					scanQrcode(fromUserName, FinalData.Wx.EVENT_SUBSCIBE, scene);
+				} else { // 其他关注时间
+
 				}
 			} else if (FinalData.Wx.EVENT_UNSUBSCRIBE.equals(event)) { // 取消订阅
-				// 将对应的openid的订阅状态改为取消关注，该粉丝已死
-				TalentmarketMember member = new TalentmarketMember();
-				member.setOpenid(fromUserName);
-				Date now = new Date();
-				member.setUpddate(now);
-				member.setSubscribedate(now);
-				member.setSubscribeStatus((byte) FinalData.Member.SUBSCIBE_NO);
-				memberMapper.updateByOpenid(member);
+				log.info("取消关注事件推送， openid={}", fromUserName);
+				unsubscibe(fromUserName);
+			} else if (FinalData.Wx.EVENT_LOCATION.equals(event)) { // 上报地理位置事件
+
+				Double latitude = Double.parseDouble(CommonUtils.objToStr(params.get("Latitude")));
+				Double longitude = Double.parseDouble(CommonUtils.objToStr(params.get("Longitude")));
+				Double precision = Double.parseDouble(CommonUtils.objToStr(params.get("Precision")));
+
+				// 如果用户不开启定位，则插入null，不获取奖励
+				log.info("地理位置上报, openid={}", fromUserName);
+				location(latitude, longitude, precision, fromUserName);
+			} else if (FinalData.Wx.EVENT_SCAN.equals(event)) { // 已关注时的扫码推送
+				log.info("已关注的扫码推送");
+				scanQrcode(fromUserName, FinalData.Wx.EVENT_SCAN, scene);
 			}
 			
 		}
 	}
-	
-	
 
-	
+	/**
+	 * 扫描事件处理
+	 * @param openid 粉丝openid
+	 * @param eventType 事件类型，未关注扫描和关注扫描
+	 * @param scene 扫描场景值，格式为_123123
+	 */
+	private void scanQrcode(String openid, String eventType, String scene) {
+		log.info("扫码场景值，scene={}", scene);
+
+		if (FinalData.Wx.EVENT_SUBSCIBE.equals(eventType)) { // 未关注扫码，场景值带qrscene_前缀
+			scene.replaceAll("qrscene_", "");
+		}
+
+		String[] sceneArr = scene.split("-");
+
+		// 推荐者的openid
+		String presenterOpenid = sceneArr[0];
+
+		// 经纪人ID
+		String agentId = sceneArr[1];
+
+		// 判断经纪人ID是否为空，为空则表示该推荐者为经纪人，不推送微信经纪人消息
+		if (StringUtils.hasText(agentId)) {
+			// TODO, 推送绑定经纪人消息
+//			pushTextMessage(Message);
+		}
+
+		// 获取当前粉丝信息
+		TalentmarketMember member = memberMapper.getByOpenid(openid);
+		if (member == null) {
+			log.error("粉丝不存在，不可能，关注的时候就存上了，这是一个bug");
+		}
+
+		// 判断是否已领取，同一个人只能领取一次红包
+		if (FinalData.Member.REDSTATUS_DRAWED == member.getSubscribeStatus()) { // 已领取
+			log.info("粉丝openid={}已领取过红包了", openid);
+			return;
+		}
+
+		// 半径映射范围
+		TalentmarketGamerules gamerules = gamerulesMapper.getDistinceAndRed();
+
+		// 判断是否在高新区的半径映射范围内，防止全国刷单
+		if (!checkDistince(member.getGeoglatitude(), member.getGeoglongitude(), gamerules.getDistance())) {
+			return;
+		}
+
+		// 通过则调用Api进行微信转账
+		grandRandRed(openid, presenterOpenid, agentId, gamerules.getMaxred());
+	}
+
+
+	/**
+	 * 发放随机红包
+	 * @param openid 粉丝的openid
+	 * @param presenterOpenid 推荐人的openid
+	 * @param agentId 经纪人id
+	 * @param maxred 随机红包最大值
+	 */
+	private void grandRandRed(String openid, String presenterOpenid, String agentId, int maxred) {
+		log.info("发放随机红包");
+
+		// 计算随机红包金额
+		double randMoney = CommonUtils.randomDigits(maxred);
+
+		// 调用微信转账接口发送随机红包
+		log.info("调用微信转账接口发送随机红包");
+
+		// 推荐人的粉丝数+1，红包累计金额+randMoney
+		memberMapper.updateFans(presenterOpenid, randMoney * 100);
+
+		// TODO, 是否修改推荐人会员等级
+
+		// 更新粉丝状态为已领取
+		TalentmarketMember fans = new TalentmarketMember();
+		fans.setOpenid(openid);
+		fans.setFopenid(presenterOpenid); // 推荐人
+		fans.setAge(Integer.parseInt(agentId)); // 经纪人id
+		fans.setRedStatus((byte) FinalData.Member.REDSTATUS_DRAWED);
+		fans.setUpddate(new Date());
+		memberMapper.insertSelective(fans);
+
+	}
+
+
+
+	/**
+	 * 校验粉丝是否在华山路人才市场的半径映射范围内
+	 * @param geoglatitude 粉丝地理纬度
+	 * @param geoglongitude 粉丝地理经度
+	 * @param distince 半径映射范围
+	 * @return boolean true 在映射范围内 false 不在映射范围内
+	 */
+	private boolean checkDistince(Double geoglatitude, Double geoglongitude, int distince) {
+
+		if (distince == 0) { // 0表示不限制
+			return true;
+		}
+
+		// 获取当前粉丝距离华山路人才市场的距离
+		double fansDistince = CommonUtils.getDistance(geoglatitude, geoglongitude, hslLatitude, hslLongitude);
+		if (fansDistince > distince) { // 超出映射范围
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
+	 * 用户上报地理位置
+	 * @param latitude 地理纬度
+	 * @param longitude 地理经度
+	 * @param precision 地理精度
+	 * @param openid
+	 */
+	private void location(Double latitude, Double longitude, Double precision, String openid) {
+
+		// 更新粉丝的地理位置
+
+		TalentmarketMember member = new TalentmarketMember();
+		member.setOpenid(openid);
+		member.setGeoglatitude(latitude);
+		member.setGeoglongitude(longitude);
+		member.setGeogprecision(precision);
+		member.setUpddate(new Date());
+		memberMapper.updateByOpenid(member);
+	}
+
+	/**
+	 * 取消订阅， 更新粉丝订阅状态为取消
+	 * @param openid 粉丝的openid
+	 */
+	private void unsubscibe(String openid) {
+		// 将对应的openid的订阅状态改为取消关注，该粉丝已死
+		TalentmarketMember member = new TalentmarketMember();
+		member.setOpenid(openid);
+		Date now = new Date();
+		member.setUpddate(now);
+		member.setSubscribedate(System.currentTimeMillis() / 1000); // 取消订阅时间，单位秒
+		member.setSubscribeStatus((byte) FinalData.Member.SUBSCIBE_NO);
+		memberMapper.updateByOpenid(member);
+	}
+
+	public static void main(String[] args) {
+		System.out.println(System.currentTimeMillis());
+	}
+
+	/**
+	 * 订阅事件处理, 新增或更新用户信息
+	 * @param openid
+	 */
+	private void subscibe(String openid) {
+
+		// 调用微信接口获取用户的基本信息
+		TalentmarketMember wxUser = getUserinfo(openid);
+
+		// 当前系统事件
+		Date now = new Date();
+
+		// 判断粉丝是否存在
+		TalentmarketMember member = memberMapper.getByOpenid(openid);
+		if (member == null) { // 新增
+			wxUser.setUid(UniqueIdUtils.getUUID());
+			wxUser.setCredate(now);
+			wxUser.setUpddate(now);
+			memberMapper.insertSelective(wxUser);
+		} else { // 更新
+			wxUser.setUpddate(now);
+			memberMapper.updateByOpenid(wxUser);
+		}
+	}
+
+	@Override
+	public TalentmarketMember getUserinfo(String openid) {
+		log.info("根据openid={}获取用户的基本信息", openid);
+		if (!StringUtils.hasText(openid)) {
+			throw new WxApiException("调用微信接口获取用户基本信息失败，reason is openid 为空");
+		}
+
+		String accessToken = getAccessToken();
+
+		// 参数
+		// 接口地址https://api.weixin.qq.com/cgi-bin/user/info?access_token=ACCESS_TOKEN&openid=OPENID&lang=zh_CN
+		String userJson = restTemplate.getForObject("https://api.weixin.qq.com/cgi-bin/user/info?access_token={ACCESS_TOKEN}&openid={OPENID}",
+				String.class, accessToken, openid);
+		log.info("userinfo={}", userJson);
+
+		// 将json转换为Map
+		Map<String, Object> userMap = JsonUtils.fromJson(userJson, Map.class);
+
+		// 赋值会员粉丝
+		TalentmarketMember member = new TalentmarketMember();
+		member.setOpenid(openid);
+		member.setNickname(CommonUtils.objToStr(userMap.get("nickname")));
+		member.setNickname(CommonUtils.objToStr(userMap.get("nickname")));
+		member.setSex(Byte.parseByte(CommonUtils.objToStr(userMap.get("sex"))));
+		member.setYuyan(CommonUtils.objToStr(userMap.get("language")));
+		member.setCountry(CommonUtils.objToStr(userMap.get("country")));
+		member.setProvince(CommonUtils.objToStr(userMap.get("province")));
+		member.setCity(CommonUtils.objToStr(userMap.get("city")));
+		member.setHeadimgurl(CommonUtils.objToStr(userMap.get("headimgurl")));
+		member.setSubscribedate(Long.parseLong(CommonUtils.objToStr(userMap.get("subscribe_time"))));
+		member.setRemark(CommonUtils.objToStr(userMap.get("remark")));
+		// 标签列表暂无
+		member.setGroupid(Integer.parseInt(CommonUtils.objToStr(userMap.get("groupid"))));
+		member.setSubscribeScene(CommonUtils.objToStr(userMap.get("subscribe_scene")));
+		member.setQrScene(Integer.parseInt(CommonUtils.objToStr(userMap.get("qr_scene"))));
+		member.setQrSceneStr(CommonUtils.objToStr(userMap.get("qr_scene_str")));
+		member.setSubscribeStatus(Byte.parseByte(CommonUtils.objToStr(userMap.get("subscribe"))));
+		return member;
+	}
+
+	@Override
+	public void pushTextMessage(String message) {
+
+	}
+
+
 }

@@ -52,25 +52,6 @@
                selectByExampleQueryId="false">
         </table>
 
-        <!--粉丝推荐记录表-->
-        <table tableName="tb_talentmarket_recommend_records" domainObjectName="TalentmarketRecommendRecords"
-               enableCountByExample="false" enableUpdateByExample="false"
-               enableDeleteByExample="false" enableSelectByExample="false"
-               selectByExampleQueryId="false">
-        </table>
 
-        <!--营销规则表-->
-        <table tableName="tb_talentmarket_gamerules" domainObjectName="TalentmarketGamerules"
-               enableCountByExample="false" enableUpdateByExample="false"
-               enableDeleteByExample="false" enableSelectByExample="false"
-               selectByExampleQueryId="false">
-        </table>
-
-        <!--员工基本信息表-->
-        <table tableName="tb_talentmarket_employee" domainObjectName="TalentmarketEmployee"
-               enableCountByExample="false" enableUpdateByExample="false"
-               enableDeleteByExample="false" enableSelectByExample="false"
-               selectByExampleQueryId="false">
-        </table>
     </context>
 </generatorConfiguration>

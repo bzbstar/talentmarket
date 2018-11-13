@@ -1,5 +1,7 @@
 package com.bzb.talentmarket.service;
 
+import com.bzb.talentmarket.entity.TalentmarketMember;
+
 import java.util.Map;
 
 public interface WxService {
@@ -40,6 +42,13 @@ public interface WxService {
 	 * @time:2018年11月11日 下午10:01:34
 	 */
 	void executeMessge(Map<String, String> params);
-	
-	
+
+	/**
+	 * 调用接口获取用户基本信息
+	 * @param openid
+	 * @return
+	 */
+	TalentmarketMember getUserinfo(String openid);
+
+	void pushTextMessage(String message);
 }

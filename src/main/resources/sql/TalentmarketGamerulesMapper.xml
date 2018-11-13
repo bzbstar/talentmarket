@@ -5,7 +5,7 @@
     <id column="id" property="id" jdbcType="INTEGER" />
     <result column="uid" property="uid" jdbcType="VARCHAR" />
     <result column="maxred" property="maxred" jdbcType="INTEGER" />
-    <result column="distance" property="distance" jdbcType="INTEGER" />
+    <result column="distance" property="distance" jdbcType="DOUBLE" />
     <result column="randred_rule" property="randredRule" jdbcType="VARCHAR" />
     <result column="credate" property="credate" jdbcType="TIMESTAMP" />
     <result column="upddate" property="upddate" jdbcType="TIMESTAMP" />
@@ -28,7 +28,7 @@
       distance, randred_rule, credate, 
       upddate)
     values (#{id,jdbcType=INTEGER}, #{uid,jdbcType=VARCHAR}, #{maxred,jdbcType=INTEGER}, 
-      #{distance,jdbcType=INTEGER}, #{randredRule,jdbcType=VARCHAR}, #{credate,jdbcType=TIMESTAMP}, 
+      #{distance,jdbcType=DOUBLE}, #{randredRule,jdbcType=VARCHAR}, #{credate,jdbcType=TIMESTAMP},
       #{upddate,jdbcType=TIMESTAMP})
   </insert>
   <insert id="insertSelective" parameterType="com.bzb.talentmarket.entity.TalentmarketGamerules" >
@@ -67,7 +67,7 @@
         #{maxred,jdbcType=INTEGER},
       </if>
       <if test="distance != null" >
-        #{distance,jdbcType=INTEGER},
+        #{distance,jdbcType=DOUBLE},
       </if>
       <if test="randredRule != null" >
         #{randredRule,jdbcType=VARCHAR},
@@ -90,7 +90,7 @@
         maxred = #{maxred,jdbcType=INTEGER},
       </if>
       <if test="distance != null" >
-        distance = #{distance,jdbcType=INTEGER},
+        distance = #{distance,jdbcType=DOUBLE},
       </if>
       <if test="randredRule != null" >
         randred_rule = #{randredRule,jdbcType=VARCHAR},
@@ -108,10 +108,16 @@
     update tb_talentmarket_gamerules
     set uid = #{uid,jdbcType=VARCHAR},
       maxred = #{maxred,jdbcType=INTEGER},
-      distance = #{distance,jdbcType=INTEGER},
+      distance = #{distance,jdbcType=DOUBLE},
       randred_rule = #{randredRule,jdbcType=VARCHAR},
       credate = #{credate,jdbcType=TIMESTAMP},
       upddate = #{upddate,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=INTEGER}
   </update>
+
+  <select id="getDistinceAndRed" resultMap="BaseResultMap">
+    SELECT distance, maxred
+    FROM tb_talentmarket_gamerules
+    LIMIT 1
+  </select>
 </mapper>

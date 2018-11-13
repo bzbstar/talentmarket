@@ -24,3 +24,7 @@
 /nbdist/
 /.nb-gradle/
 
+/src/main/resources/application-test.properties
+/src/main/resources/application-dev.properties
+/src/main/resources/application-pro.properties
+/src/main/resources/application.properties
