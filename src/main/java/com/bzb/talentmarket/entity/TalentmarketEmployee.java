@@ -21,6 +21,8 @@ public class TalentmarketEmployee {
 
     private String qq;
 
+    private String wxid;
+
     private String email;
 
     private String country;
@@ -115,6 +117,14 @@ public class TalentmarketEmployee {
 
     public void setQq(String qq) {
         this.qq = qq == null ? null : qq.trim();
+    }
+
+    public String getWxid() {
+        return wxid;
+    }
+
+    public void setWxid(String wxid) {
+        this.wxid = wxid == null ? null : wxid.trim();
     }
 
     public String getEmail() {

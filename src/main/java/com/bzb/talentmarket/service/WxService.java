@@ -51,4 +51,30 @@ public interface WxService {
 	TalentmarketMember getUserinfo(String openid);
 
 	void pushTextMessage(String message);
+
+	/**
+	 * 将一条长链接转成短链接。
+	 * @param longurl 长链接
+	 * @return
+	 */
+	String shorturl(String longurl);
+
+	/**
+	 * 获取所有的客服列表
+	 * @return
+	 */
+	Map<String, Object> getkflist();
+
+	/**
+	 * 添加客服账号，
+	 * @param kfAccount 完整客服帐号，格式为：帐号前缀@公众号微信号，帐号前缀最多10个字符，必须是英文、数字字符或者下划线，后缀为公众号微信号，长度不超过30个字符
+	 * @param nickname 客服昵称，最长16个字
+	 */
+	void addKf(String kfAccount, String nickname);
+
+	/**
+	 * 客服消息，发送文本消息
+	 * @param content 文本内容
+	 */
+	void sendTextMessage(String openid, String content);
 }

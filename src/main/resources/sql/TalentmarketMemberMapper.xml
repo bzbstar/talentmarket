@@ -11,6 +11,7 @@
     <result column="sex" property="sex" jdbcType="TINYINT" />
     <result column="age" property="age" jdbcType="INTEGER" />
     <result column="idcardno" property="idcardno" jdbcType="VARCHAR" />
+    <result column="wxid" property="wxid" jdbcType="VARCHAR" />
     <result column="phone" property="phone" jdbcType="VARCHAR" />
     <result column="qq" property="qq" jdbcType="VARCHAR" />
     <result column="email" property="email" jdbcType="VARCHAR" />
@@ -46,7 +47,7 @@
     <result column="upddate" property="upddate" jdbcType="TIMESTAMP" />
   </resultMap>
   <sql id="Base_Column_List" >
-    id, uid, openid, nickname, realname, sex, age, idcardno, phone, qq, email,
+    id, uid, openid, nickname, realname, sex, age, idcardno, wxid, phone, qq, email,
     headimgurl, `yuyan`, country, province, city, counties, address, memberlevel, brokeruid,
     fopenid, unionid, remark, groupid, tagid_list, subscribe_scene, qr_scene, qr_scene_str, 
     qrcode, fans_num, totalredmoney, isbroker, subscribe_status, red_status, subscribedate,
@@ -74,7 +75,7 @@
   <insert id="insert" parameterType="com.bzb.talentmarket.entity.TalentmarketMember" >
     insert into tb_talentmarket_member (id, uid, openid, 
       nickname, realname,
-      sex, age, idcardno, 
+      sex, age, idcardno, wxid
       phone, qq, email, headimgurl, 
       yuyan, country, province,
       city, counties, address, 
@@ -87,7 +88,7 @@
       geogprecision, credate, upddate)
     values (#{id,jdbcType=INTEGER}, #{uid,jdbcType=VARCHAR}, #{openid,jdbcType=VARCHAR}, 
       #{nickname,jdbcType=VARCHAR}, #{realname,jdbcType=VARCHAR},
-      #{sex,jdbcType=TINYINT}, #{age,jdbcType=INTEGER}, #{idcardno,jdbcType=VARCHAR}, 
+      #{sex,jdbcType=TINYINT}, #{age,jdbcType=INTEGER}, #{idcardno,jdbcType=VARCHAR}, #{wxid,jdbcType=VARCHAR},
       #{phone,jdbcType=VARCHAR}, #{qq,jdbcType=VARCHAR}, #{email,jdbcType=VARCHAR}, #{headimgurl,jdbcType=VARCHAR}, 
       #{yuyan,jdbcType=VARCHAR}, #{country,jdbcType=VARCHAR}, #{province,jdbcType=VARCHAR},
       #{city,jdbcType=VARCHAR}, #{counties,jdbcType=VARCHAR}, #{address,jdbcType=VARCHAR}, 
@@ -126,6 +127,9 @@
       </if>
       <if test="idcardno != null" >
         idcardno,
+      </if>
+      <if test="wxid != null" >
+        wxid,
       </if>
       <if test="phone != null" >
         phone,
@@ -249,6 +253,9 @@
       <if test="idcardno != null" >
         #{idcardno,jdbcType=VARCHAR},
       </if>
+      <if test="wxid != null" >
+        #{wxid,jdbcType=VARCHAR},
+      </if>
       <if test="phone != null" >
         #{phone,jdbcType=VARCHAR},
       </if>
@@ -370,6 +377,9 @@
       </if>
       <if test="idcardno != null" >
         idcardno = #{idcardno,jdbcType=VARCHAR},
+      </if>
+      <if test="wxid != null" >
+        wxid = #{wxid,jdbcType=VARCHAR},
       </if>
       <if test="phone != null" >
         phone = #{phone,jdbcType=VARCHAR},
@@ -496,6 +506,9 @@
       <if test="idcardno != null" >
         idcardno = #{idcardno,jdbcType=VARCHAR},
       </if>
+      <if test="wxid != null" >
+        wxid = #{wxid,jdbcType=VARCHAR},
+      </if>
       <if test="phone != null" >
         phone = #{phone,jdbcType=VARCHAR},
       </if>
@@ -605,6 +618,7 @@
       sex = #{sex,jdbcType=TINYINT},
       age = #{age,jdbcType=INTEGER},
       idcardno = #{idcardno,jdbcType=VARCHAR},
+      wxid = #{wxid,jdbcType=VARCHAR},
       phone = #{phone,jdbcType=VARCHAR},
       qq = #{qq,jdbcType=VARCHAR},
       email = #{email,jdbcType=VARCHAR},

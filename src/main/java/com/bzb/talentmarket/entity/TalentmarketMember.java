@@ -78,6 +78,9 @@ public class TalentmarketMember {
     private Double geoglongitude;
     private Double geogprecision;
 
+    // 微信号
+    private String wxid;
+
     private Date credate;
 
     private Date upddate;
@@ -402,6 +405,14 @@ public class TalentmarketMember {
         this.geogprecision = geogprecision;
     }
 
+    public String getWxid() {
+        return wxid;
+    }
+
+    public void setWxid(String wxid) {
+        this.wxid = wxid;
+    }
+
     @Override
     public String toString() {
         return "TalentmarketMember{" +
@@ -443,6 +454,7 @@ public class TalentmarketMember {
                 ", geoglatitude=" + geoglatitude +
                 ", geoglongitude=" + geoglongitude +
                 ", geogprecision=" + geogprecision +
+                ", wxid='" + wxid + '\'' +
                 ", credate=" + credate +
                 ", upddate=" + upddate +
                 '}';

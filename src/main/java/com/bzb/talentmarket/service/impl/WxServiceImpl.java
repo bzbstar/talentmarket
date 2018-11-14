@@ -7,8 +7,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
+import com.bzb.talentmarket.entity.TalentmarketEmployee;
 import com.bzb.talentmarket.entity.TalentmarketGamerules;
 import com.bzb.talentmarket.entity.TalentmarketMember;
+import com.bzb.talentmarket.mapper.TalentmarketEmployeeMapper;
 import com.bzb.talentmarket.mapper.TalentmarketGamerulesMapper;
 import com.bzb.talentmarket.mapper.TalentmarketMemberMapper;
 import com.bzb.talentmarket.mapper.UserMapper;
@@ -41,6 +43,10 @@ public class WxServiceImpl implements WxService {
 	// 华山路人才市场经纬度， 腾讯高德地图显示
 	private double hslLatitude = 31.3123300000; // 纬度
 	private double hslLongitude = 120.5356100000; // 精度
+
+	// 公众微信号
+	@Value("${wx_wxid}")
+	private String wxid;
 	
 	@Autowired
 	private RestTemplate restTemplate;
@@ -50,6 +56,9 @@ public class WxServiceImpl implements WxService {
 
 	@Autowired
 	private TalentmarketGamerulesMapper gamerulesMapper;
+
+	@Autowired
+	private TalentmarketEmployeeMapper employeeMapper;
 
 	@Value("${wx_appid}")
 	private String appid;
@@ -192,8 +201,7 @@ public class WxServiceImpl implements WxService {
 
 		// 判断经纪人ID是否为空，为空则表示该推荐者为经纪人，不推送微信经纪人消息
 		if (StringUtils.hasText(agentId)) {
-			// TODO, 推送绑定经纪人消息
-//			pushTextMessage(Message);
+			sendAgentMessage(openid, agentId);
 		}
 
 		// 获取当前粉丝信息
@@ -203,7 +211,7 @@ public class WxServiceImpl implements WxService {
 		}
 
 		// 判断是否已领取，同一个人只能领取一次红包
-		if (FinalData.Member.REDSTATUS_DRAWED == member.getSubscribeStatus()) { // 已领取
+		if (FinalData.Member.REDSTATUS_DRAWED == member.getRedStatus()) { // 已领取
 			log.info("粉丝openid={}已领取过红包了", openid);
 			return;
 		}
@@ -218,6 +226,37 @@ public class WxServiceImpl implements WxService {
 
 		// 通过则调用Api进行微信转账
 		grandRandRed(openid, presenterOpenid, agentId, gamerules.getMaxred());
+	}
+
+	/**
+	 * 推送经济人消息
+	 * @param openid 粉丝openid
+	 * @param agentId 经纪人id
+	 */
+	private void sendAgentMessage(String openid, String agentId) {
+		log.info("推送经纪人消息");
+
+		// 根据id获取经纪人id
+		TalentmarketEmployee employee = employeeMapper.selectByPrimaryKey(Integer.parseInt(agentId));
+		if (employee == null) {
+			log.error("经纪人不存在，this is a bug");
+			throw new WxApiException("经纪人不存在，this is a bug");
+		}
+
+		String phone = employee.getPhone();
+		String wxid = employee.getWxid();
+
+		StringBuilder content = new StringBuilder();
+		content.append("感谢您关注\"华山路人才市场公众号\"\n\n")
+				.append("我是您的经纪人：").append(employee.getNickname());
+		if (phone.equals(wxid)) {
+			content.append("电话/微信：" + phone).append("\n");
+		} else {
+			content.append("电话：" + phone).append("\n微信：").append(wxid).append("\n");
+		}
+		content.append("请随时与我联系");
+
+		sendTextMessage(openid, content.toString());
 	}
 
 
@@ -251,6 +290,13 @@ public class WxServiceImpl implements WxService {
 		fans.setUpddate(new Date());
 		memberMapper.insertSelective(fans);
 
+		// 给推荐这发送红包消息
+		StringBuilder content = new StringBuilder();
+		content.append("感谢你对\"华山路人才市场\"的大力关注！\n\n")
+				.append("恭喜你获得红包：<span color='red'>").append(randMoney)
+		.append("</span>元\n\n")
+		.append("这是送您的一点点心意，请注意查收");
+		sendTextMessage(presenterOpenid, content.toString());
 	}
 
 
@@ -386,5 +432,82 @@ public class WxServiceImpl implements WxService {
 
 	}
 
+	@Override
+	public String shorturl(String longurl) {
+		log.info("将长链接转换为短链接， longurl={}", longurl);
 
+		String accessToken = getAccessToken();
+
+		// 参数
+		Map<String, String> params = new HashMap<>();
+		params.put("action", "long2short");
+		params.put("long_url", longurl);
+
+		Map<String, Object> resultMap = restTemplate.postForObject("https://api.weixin.qq.com/cgi-bin/shorturl?access_token=" + accessToken,
+				params, Map.class);
+		if (resultMap == null || Integer.parseInt(CommonUtils.objToStr(resultMap.get("errcode"))) != 0) {
+			log.error("调用微信长连接转换为短链接异常，reason is {}" + resultMap);
+			throw new WxApiException("调用微信长连接转换为短链接异常，reason is " + resultMap.toString());
+		}
+
+		String shorturl = CommonUtils.objToStr(resultMap.get("short_url"));
+		log.info("转换为的短链接为={}", shorturl);
+		return shorturl;
+	}
+
+
+	@Override
+	public Map<String, Object> getkflist() {
+
+		log.info("获取所有的客服列表");
+		// https://api.weixin.qq.com/cgi-bin/customservice/getkflist?access_token=ACCESS_TOKEN
+
+		String accessToken = getAccessToken();
+
+		Map<String, Object> kfs = restTemplate.getForObject("https://api.weixin.qq.com/cgi-bin/customservice/getkflist?access_token=" + accessToken, Map.class);
+		log.info("客服列表，kdlist={}", kfs);
+
+		return kfs;
+	}
+
+	@Override
+	public void addKf(String kfAccount, String nickname) {
+		log.info("添加客服账号");
+
+		String accessToken = getAccessToken();
+
+		// 请求参数
+		Map<String, Object> params = new HashMap<>();
+		params.put("kf_account",  "kf2001@" + wxid);
+		params.put("nickname", nickname);
+
+		Map<String, Object> resultMap = restTemplate.postForObject("https://api.weixin.qq.com/customservice/kfaccount/add?access_token=" + accessToken,
+				params, Map.class);
+
+		if (resultMap == null || Integer.parseInt(CommonUtils.objToStr(resultMap.get("errcode"))) != 0) {
+			throw new WxApiException("调用微信新增客服接口异常，reason is " + resultMap.toString());
+		}
+	}
+
+	@Override
+	public void sendTextMessage(String openid, String content) {
+		log.info("发送文本消息");
+
+		String url = "https://api.weixin.qq.com/cgi-bin/message/custom/send?access_token=" + getAccessToken();
+
+		Map<String, Object> text= new HashMap<>();
+		text.put("content", content);
+
+		// 请求参数
+		Map<String, Object> params = new HashMap<>();
+		params.put("touser", openid);
+		params.put("msgtype", "text");
+		params.put("text", text);
+
+		Map<String, Object> result = restTemplate.postForObject(url, params, Map.class);
+		if (result == null || Integer.parseInt(CommonUtils.objToStr(result.get("errcode"))) != 0) {
+			log.error("调用微信发送文本消息客服接口失败， reason is {}", result);
+			throw new WxApiException("调用微信发送文本消息客服接口失败， reason is " + result.toString());
+		}
+	}
 }
