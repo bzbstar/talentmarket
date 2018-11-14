@@ -12,25 +12,26 @@
     <script src="https://unpkg.com/vue/dist/vue.min.js"></script>
     <script src="https://unpkg.com/vant/lib/vant.min.js"></script>
 
-    <style>
+    <style lang="less">
         html{-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%;font-size:100%;}
         body{color:#333; overflow-x: hidden;}
         .box{
             width: 100%;
             height: 130px;
-            line-height:130px;
+            background-color: #FFFFFF;
+            margin-bottom: 10px;
         }
         img{vertical-align:middle;}
         .hsl_center{
             text-align: center;
         }
-    </style>
+	</style>
 </head>
 <body>
-    <div id="app">
+    <div id="app" style="background-color: #fafafa;">
 
         <!--头部， 头像和二维码-->
-        <van-row class="box" style="background: #2196f3;">
+        <van-row class="box " style="background: #2196f3; line-height:130px;">
             <van-col span="8" class="hsl_center">
                 <img src="http://thirdwx.qlogo.cn/mmopen/DzfLC7vAweubs3BgcRTuuMkEfoHlTZkaTQw6M2hUxRDkVBl20vbelTGZ9XsreBq7k7dn7eK1zXiaRpWndboujXsibAkiaf2DERic/132"
                      width="100px;" style="border-radius:50%;"/>
@@ -40,31 +41,59 @@
             </van-col>
             <van-col span="8">
                 <img src="https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQHY8DwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyZURRaW9SRW9kMGwxMDAwMHcwN3AAAgStSOpbAwQAAAAA"
-                     width="100px;padding-left: 10px;"/>
+                     width="100px;padding-left: 10px;" @click="showQrcode()"/>
             </van-col>
         </van-row>
 
         <!--随机红包金额-->
-        <van-row type="flex" justify="center" class="box">
-            <van-col span="24">span: 24</van-col>
+        <van-row type="flex" justify="center" class="box hsl_center" >
+            <van-col span="24">
+           		<p style="font-size: 12px;">累积圈粉金额</p>
+           		<a href="http://www.baidu.com" style="font-size: 36px;color: #f44336;">5.55</a>
+            </van-col>
         </van-row>
 
         <!--粉丝数量-->
-        <van-row type="flex" justify="center" class="box">
-            <van-col span="24">span: 24</van-col>
+        <van-row type="flex" justify="center" class="box hsl_center">
+            <van-col span="24">
+            	<p style="font-size: 12px;">贡献粉丝</p>
+           		<a href="http://www.baidu.com" style="font-size: 36px;">3</a>
+            </van-col>
         </van-row>
 
         <!--活动规则-->
-        <van-row type="flex" class="box">
-            <van-col span="24">span: 24</van-col>
+        <van-row type="flex" class="box" style="height: 200px;">
+            <van-col span="24" style="font-size: 12px;padding: 8px;">
+            	奖励规则：<br/>
+				1、如果您认可我们提供的服务，请分享您的二维码；<br/>
+				2、您贡献的每位粉丝，可能会获得0元-3元内的随机红包；<br/>
+				3、您贡献的每位粉丝，成功入职后，可能会获得100-1000元不等的佣金（具体介绍费的价目表请参照每个工厂/岗位的详情页)；<br/>
+				4、如有疑问，添加财务微信：VIPKF1232在线咨询；<br/>
+				5、我方可能会因为业务需要，调整相关规则，最终解释权归我方所有；<br/>
+            </van-col>
         </van-row>
+        
+        <!-- 二维码弹层 -->
+        <div>
+	        <van-popup v-model="show">
+			  	<img src="https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQHY8DwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyZURRaW9SRW9kMGwxMDAwMHcwN3AAAgStSOpbAwQAAAAA"
+			  	 width="300px;"/>
+			</van-popup>
+        </div>
+        
     </div>
 
     <script>
         var app = new Vue({
             el: '#app',
             data: {
-                message: 'Hello Vue!'
+                message: 'Hello Vue!',
+                show: false
+            }, 
+            methods : {
+            	showQrcode() {
+            		this.show = true;
+            	}
             }
         })
     </script>
