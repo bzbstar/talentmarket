@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.bzb.talentmarket.mapper.RedGrandrecordsMapper" >
+  <resultMap id="BaseResultMap" type="com.bzb.talentmarket.entity.RedGrandrecords" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="uid" property="uid" jdbcType="VARCHAR" />
+    <result column="draweruid" property="draweruid" jdbcType="VARCHAR" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="openid" property="openid" jdbcType="VARCHAR" />
+    <result column="money" property="money" jdbcType="BIGINT" />
+    <result column="source_openid" property="sourceOpenid" jdbcType="VARCHAR" />
+    <result column="source" property="source" jdbcType="TINYINT" />
+    <result column="credate" property="credate" jdbcType="TIMESTAMP" />
+    <result column="upddate" property="upddate" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, uid, draweruid, name, openid, money, source_openid, source, credate, upddate
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from tb_red_grandrecords
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from tb_red_grandrecords
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.bzb.talentmarket.entity.RedGrandrecords" >
+    insert into tb_red_grandrecords (id, uid, draweruid, 
+      name, openid, money, 
+      source_openid, source, credate, 
+      upddate)
+    values (#{id,jdbcType=INTEGER}, #{uid,jdbcType=VARCHAR}, #{draweruid,jdbcType=VARCHAR}, 
+      #{name,jdbcType=VARCHAR}, #{openid,jdbcType=VARCHAR}, #{money,jdbcType=BIGINT}, 
+      #{sourceOpenid,jdbcType=VARCHAR}, #{source,jdbcType=TINYINT}, #{credate,jdbcType=TIMESTAMP}, 
+      #{upddate,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.bzb.talentmarket.entity.RedGrandrecords" >
+    insert into tb_red_grandrecords
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="uid != null" >
+        uid,
+      </if>
+      <if test="draweruid != null" >
+        draweruid,
+      </if>
+      <if test="name != null" >
+        name,
+      </if>
+      <if test="openid != null" >
+        openid,
+      </if>
+      <if test="money != null" >
+        money,
+      </if>
+      <if test="sourceOpenid != null" >
+        source_openid,
+      </if>
+      <if test="source != null" >
+        source,
+      </if>
+      <if test="credate != null" >
+        credate,
+      </if>
+      <if test="upddate != null" >
+        upddate,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="uid != null" >
+        #{uid,jdbcType=VARCHAR},
+      </if>
+      <if test="draweruid != null" >
+        #{draweruid,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="openid != null" >
+        #{openid,jdbcType=VARCHAR},
+      </if>
+      <if test="money != null" >
+        #{money,jdbcType=BIGINT},
+      </if>
+      <if test="sourceOpenid != null" >
+        #{sourceOpenid,jdbcType=VARCHAR},
+      </if>
+      <if test="source != null" >
+        #{source,jdbcType=TINYINT},
+      </if>
+      <if test="credate != null" >
+        #{credate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="upddate != null" >
+        #{upddate,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.bzb.talentmarket.entity.RedGrandrecords" >
+    update tb_red_grandrecords
+    <set >
+      <if test="uid != null" >
+        uid = #{uid,jdbcType=VARCHAR},
+      </if>
+      <if test="draweruid != null" >
+        draweruid = #{draweruid,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null" >
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="openid != null" >
+        openid = #{openid,jdbcType=VARCHAR},
+      </if>
+      <if test="money != null" >
+        money = #{money,jdbcType=BIGINT},
+      </if>
+      <if test="sourceOpenid != null" >
+        source_openid = #{sourceOpenid,jdbcType=VARCHAR},
+      </if>
+      <if test="source != null" >
+        source = #{source,jdbcType=TINYINT},
+      </if>
+      <if test="credate != null" >
+        credate = #{credate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="upddate != null" >
+        upddate = #{upddate,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.bzb.talentmarket.entity.RedGrandrecords" >
+    update tb_red_grandrecords
+    set uid = #{uid,jdbcType=VARCHAR},
+      draweruid = #{draweruid,jdbcType=VARCHAR},
+      name = #{name,jdbcType=VARCHAR},
+      openid = #{openid,jdbcType=VARCHAR},
+      money = #{money,jdbcType=BIGINT},
+      source_openid = #{sourceOpenid,jdbcType=VARCHAR},
+      source = #{source,jdbcType=TINYINT},
+      credate = #{credate,jdbcType=TIMESTAMP},
+      upddate = #{upddate,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+  <select id="getByOpenid" parameterType="java.lang.String" resultMap="BaseResultMap">
+    SELECT <include refid="Base_Column_List"/>
+    FROM tb_red_grandrecords
+    WHERE openid = #{openid,jdbcType=VARCHAR}
+  </select>
+</mapper>

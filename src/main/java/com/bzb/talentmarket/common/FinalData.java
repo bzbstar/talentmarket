@@ -39,5 +39,8 @@ public class FinalData {
         // 随机红包领取状态
         public static int REDSTATUS_DRAWED = 1; // 已领取
         public static int REDSTATUS_UNCLAINMED = 0; // 未领取
+
+        // 红包来源
+        public static int REDMONEY_SOURCE_SCAN_RECOMMEND = 0; // 扫码推荐
     }
 }

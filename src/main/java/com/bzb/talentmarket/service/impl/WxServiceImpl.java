@@ -7,13 +7,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
+import com.bzb.talentmarket.entity.RedGrandrecords;
 import com.bzb.talentmarket.entity.TalentmarketEmployee;
 import com.bzb.talentmarket.entity.TalentmarketGamerules;
 import com.bzb.talentmarket.entity.TalentmarketMember;
-import com.bzb.talentmarket.mapper.TalentmarketEmployeeMapper;
-import com.bzb.talentmarket.mapper.TalentmarketGamerulesMapper;
-import com.bzb.talentmarket.mapper.TalentmarketMemberMapper;
-import com.bzb.talentmarket.mapper.UserMapper;
+import com.bzb.talentmarket.mapper.*;
 import com.bzb.talentmarket.utils.JsonUtils;
 import com.bzb.talentmarket.utils.UniqueIdUtils;
 import org.slf4j.Logger;
@@ -28,6 +26,8 @@ import com.bzb.talentmarket.common.FinalData;
 import com.bzb.talentmarket.exception.WxApiException;
 import com.bzb.talentmarket.service.WxService;
 import com.bzb.talentmarket.utils.CommonUtils;
+
+import javax.naming.event.ObjectChangeListener;
 
 /**
  * 
@@ -59,6 +59,9 @@ public class WxServiceImpl implements WxService {
 
 	@Autowired
 	private TalentmarketEmployeeMapper employeeMapper;
+
+	@Autowired
+	private RedGrandrecordsMapper redMapper;
 
 	@Value("${wx_appid}")
 	private String appid;
@@ -276,8 +279,11 @@ public class WxServiceImpl implements WxService {
 		// 调用微信转账接口发送随机红包
 		log.info("调用微信转账接口发送随机红包");
 
+		// 随机红包金额，单位分
+		long redMoney = (long) randMoney * 100;
+
 		// 推荐人的粉丝数+1，红包累计金额+randMoney
-		memberMapper.updateFans(presenterOpenid, randMoney * 100);
+		memberMapper.updateFans(presenterOpenid, redMoney);
 
 		// TODO, 是否修改推荐人会员等级
 
@@ -289,6 +295,24 @@ public class WxServiceImpl implements WxService {
 		fans.setRedStatus((byte) FinalData.Member.REDSTATUS_DRAWED);
 		fans.setUpddate(new Date());
 		memberMapper.insertSelective(fans);
+
+		// 插入领取红包记录
+
+		// 获取推荐人信息
+		TalentmarketMember presenter = memberMapper.getByOpenid(presenterOpenid);
+
+		RedGrandrecords red = new RedGrandrecords();
+		red.setUid(UniqueIdUtils.getUUID());
+		red.setDraweruid(presenter.getOpenid());
+		red.setName(presenter.getNickname());
+		red.setMoney(redMoney);
+		red.setSourceOpenid(openid);
+		red.setSource((byte) FinalData.Member.REDMONEY_SOURCE_SCAN_RECOMMEND);
+		Date now = new Date();
+		red.setCredate(now);
+		red.setUpddate(now);
+		redMapper.insertSelective(red);
+
 
 		// 给推荐这发送红包消息
 		StringBuilder content = new StringBuilder();
@@ -509,5 +533,51 @@ public class WxServiceImpl implements WxService {
 			log.error("调用微信发送文本消息客服接口失败， reason is {}", result);
 			throw new WxApiException("调用微信发送文本消息客服接口失败， reason is " + result.toString());
 		}
+	}
+
+	@Override
+	public Map<String, Object> getAccessTokenByCode(String code) {
+		log.info("通过授权code获取opedid, code={}", code);
+
+		// 参数
+		Map<String, Object> params = new HashMap<>();
+		params.put("appid", appid);
+		params.put("secret", secret);
+		params.put("grant_type", "authorization_code");
+		params.put("code", code);
+
+		String resultJson = restTemplate.getForObject("https://api.weixin.qq.com/sns/oauth2/access_token?appid={APPID}&secret={SECRET}&code={CODE}&grant_type=authorization_code", String.class,
+				appid, secret, code);
+		log.info("根据code获取openid返回结果， result={}", resultJson);
+
+		Map<String, Object> result = JsonUtils.fromJson(resultJson, Map.class);
+
+		if (result == null || result.containsKey("errcode")) {
+			throw new WxApiException("根据授权code获取openid失败");
+		}
+
+		return result;
+	}
+
+	@Override
+	public String getAuthRedirectUrl(String scope, String state, String url) {
+
+		try {
+			url = URLEncoder.encode(url, "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			log.error("微信授权url编码错误");
+			e.printStackTrace();
+		}
+
+		StringBuilder redirectUrl = new StringBuilder();
+		redirectUrl.append("https://open.weixin.qq.com/connect/oauth2/authorize?")
+				.append("appid=").append(appid)
+				.append("&redirect_uri=").append(url)
+				.append("&response_type=code")
+				.append("&scope=").append(scope)
+				.append("&state=").append(state)
+				.append("#wechat_redirect");
+		log.info("授权地址， redirectUrl={}", redirectUrl);
+		return redirectUrl.toString();
 	}
 }

@@ -35,5 +35,5 @@ public interface TalentmarketMemberMapper {
      * @param randMoney, 单位分
      * @return
      */
-    int updateFans(String presenterOpenid, double randMoney);
+    int updateFans(String presenterOpenid, long randMoney);
 }

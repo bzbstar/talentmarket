@@ -30,11 +30,11 @@
 <body>
     <div id="app" style="background-color: #fafafa;">
 
-        <!--头部， 头像和二维码-->
+        <!--头部， 头像和二维码th:src="${member.headimgurl}"th:src="${member.qrcode}"-->
         <van-row class="box " style="background: #2196f3; line-height:130px;">
             <van-col span="8" class="hsl_center">
                 <img src="http://thirdwx.qlogo.cn/mmopen/DzfLC7vAweubs3BgcRTuuMkEfoHlTZkaTQw6M2hUxRDkVBl20vbelTGZ9XsreBq7k7dn7eK1zXiaRpWndboujXsibAkiaf2DERic/132"
-                     width="100px;" style="border-radius:50%;"/>
+                      width="100px;" style="border-radius:50%;"/>
             </van-col>
             <van-col span="8" class="hsl_center" style="color: white;">
                 分享二维码<br>
@@ -46,14 +46,16 @@
         </van-row>
 
         <!--随机红包金额-->
-        <van-row type="flex" justify="center" class="box hsl_center" >
+        <van-row type="flex" justify="center" class="box hsl_center">
             <van-col span="24">
-           		<p style="font-size: 12px;">累积圈粉金额</p>
-           		<a href="http://www.baidu.com" style="font-size: 36px;color: #f44336;">5.55</a>
+                <div style="height: 100%;" @click="getRedRecords()">
+                    <div style="font-size: 12px;margin: 20px;">累积圈粉金额</div>
+                    <div style="font-size: 36px;color: #f44336;">5.55</div>
+                </div>
             </van-col>
         </van-row>
 
-        <!--粉丝数量-->
+        <!--粉丝数量 th:text="${member.fansNum}"-->
         <van-row type="flex" justify="center" class="box hsl_center">
             <van-col span="24">
             	<p style="font-size: 12px;">贡献粉丝</p>
@@ -83,7 +85,7 @@
         
     </div>
 
-    <script>
+    <script type="text/javascript" th:inline="javascript">
         var app = new Vue({
             el: '#app',
             data: {
@@ -91,9 +93,15 @@
                 show: false
             }, 
             methods : {
+                // 展示二维码
             	showQrcode() {
             		this.show = true;
-            	}
+            	},
+
+                // 随机红包记录列表
+                getRedRecords() {
+                    window.location.href = /*[[@{/memberCenter/toRedRecords(openid='oqFhA1YfrunnhBasHmsdZ4KCLqok',headimgurl='http://thirdwx.qlogo.cn/mmopen/DzfLC7vAweubs3BgcRTuuMkEfoHlTZkaTQw6M2hUxRDkVBl20vbelTGZ9XsreBq7k7dn7eK1zXiaRpWndboujXsibAkiaf2DERic/132',qrcode='https://w.url.cn/s/AZbx7Ag')}]]*/;
+                }
             }
         })
     </script>

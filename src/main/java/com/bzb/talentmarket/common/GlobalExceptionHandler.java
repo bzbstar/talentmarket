@@ -22,6 +22,7 @@ public class GlobalExceptionHandler {
             CheckParamsException checkParamsException = (CheckParamsException) e;
             message = e.getMessage();
         }
+        e.printStackTrace();
         return new ResultModel(false, message);
     }
 }

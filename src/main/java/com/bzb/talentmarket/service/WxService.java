@@ -77,4 +77,20 @@ public interface WxService {
 	 * @param content 文本内容
 	 */
 	void sendTextMessage(String openid, String content);
+
+	/**
+	 * 根据授权code获取网页授权凭证，和全局的接口调用凭证不一样
+	 * @param code
+	 * @return
+	 */
+	Map<String, Object> getAccessTokenByCode(String code);
+
+	/**
+	 * 获取微信授权地址
+	 * @param scope 应用授权作用域，snsapi_base （不弹出授权页面，直接跳转，只能获取用户openid），snsapi_userinfo （弹出授权页面，可通过openid拿到昵称、性别、所在地。并且， 即使在未关注的情况下，只要用户授权，也能获取其信息 ）
+	 * @param state 重定向后会带上state参数，开发者可以填写a-zA-Z0-9的参数值，最多128字节
+	 * @param redirectUri 重定向的url，需进行url编码
+	 * @return
+	 */
+	String getAuthRedirectUrl(String scope, String state, String redirectUri);
 }

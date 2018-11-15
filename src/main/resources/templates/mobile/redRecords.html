@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <title>会员中心</title>
+
+    <!-- 引入样式 -->
+    <link rel="stylesheet" href="https://unpkg.com/vant/lib/index.css">
+
+    <!-- 引入组件 -->
+    <script src="https://unpkg.com/vue/dist/vue.min.js"></script>
+    <script src="https://unpkg.com/vant/lib/vant.min.js"></script>
+
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+    <style lang="less">
+        html{-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%;font-size:100%;}
+        body{color:#333;}
+        .box{
+            width: 100%;
+            height: 130px;
+            background-color: #FFFFFF;
+            margin-bottom: 10px;
+        }
+        img{vertical-align:middle;}
+        .hsl_center{
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+<div id="app" style="background-color: #fafafa;">
+
+    <!--头部， 头像和二维码th:src="${member.headimgurl}"th:src="${member.qrcode}"-->
+    <van-row class="box " style="background: #2196f3; line-height:130px;">
+        <van-col span="8" class="hsl_center">
+            <img src="http://thirdwx.qlogo.cn/mmopen/DzfLC7vAweubs3BgcRTuuMkEfoHlTZkaTQw6M2hUxRDkVBl20vbelTGZ9XsreBq7k7dn7eK1zXiaRpWndboujXsibAkiaf2DERic/132"
+                 width="100px;" style="border-radius:50%;"/>
+        </van-col>
+        <van-col span="8" class="hsl_center" style="color: white;">
+            分享二维码<br>
+        </van-col>
+        <van-col span="8">
+            <img src="https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQHY8DwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyZURRaW9SRW9kMGwxMDAwMHcwN3AAAgStSOpbAwQAAAAA"
+                 width="100px;padding-left: 10px;" @click="showQrcode()"/>
+        </van-col>
+    </van-row>
+
+    <!--随机红包金额-->
+    <van-row type="flex" justify="center" style="display: block; height: 200px;border: 1px solid red;">
+        <van-col span="24">
+            <div >
+
+                <van-list
+                    v-model="loading"
+                    :finished="finished"
+                    @load="onLoad"
+                    :immediate-check="false"
+                >
+
+                    <van-cell
+                        v-for="item in list"
+                        :key="item"
+                        :title="item"
+                    />
+
+                </van-list>
+
+            </div>
+        </van-col>
+    </van-row>
+
+    <!-- 二维码弹层 -->
+    <div>
+        <van-popup v-model="show">
+            <img src="https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQHY8DwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyZURRaW9SRW9kMGwxMDAwMHcwN3AAAgStSOpbAwQAAAAA"
+                 width="300px;"/>
+        </van-popup>
+    </div>
+
+</div>
+
+<script type="text/javascript" th:inline="javascript">
+    var app = new Vue({
+        el: '#app',
+        data: {
+            show: false,
+            list: [],
+            loading: false,
+            finished: false,
+            pageNo : 1,
+            pageSize : 10,
+        },
+        methods : {
+            // 展示二维码
+            showQrcode() {
+                this.show = true;
+            },
+
+            // 随机红包记录列表
+            getRedRecords() {
+                console.log(this.pageNo);
+                axios.get(/*[[@{/memberCenter/redRecords}]]*/,{
+                    params: {
+                        openid : '${openid}',
+                        pageNo : this.pageNo,
+                        pageSize : this.pageSize
+                    }
+                })
+                .then(function (response) {
+                    let page = response.data; // 返回结果
+                    let list = page.list; // 模块列表
+
+                    if (page && list.length > 0) {
+
+                        // 每次加载10条数据，并添加到list集合中
+                        for(var i = 0, len = list.length; i < len; i++){
+                            app.list.push(list[i]);
+                        }
+
+                    }
+
+                    // 数据全部加载完成
+                    if (page.isLastPage) {
+                        console.log("数据加载完成了");
+                        this.finished = true;
+                    }
+
+
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
+            },
+
+            onLoad() {
+                // 异步更新数据
+                setTimeout(() => {
+
+                    // 异步加载数据
+                    this.getRedRecords();
+
+                    this.pageNo ++; // 页数+1
+
+                    // 加载状态结束
+//                    this.loading = false;
+
+                }, 500);
+            },
+
+
+        }
+    })
+</script>
+</body>
+</html>
