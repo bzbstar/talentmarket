@@ -46,7 +46,7 @@
         </table>-->
 
         <!--会员表-->
-        <table tableName="tb_red_grandrecords" domainObjectName="RedGrandrecords"
+        <table tableName="tb_talentmarket_kf" domainObjectName="TalentmarketKf"
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false"
                selectByExampleQueryId="false">
