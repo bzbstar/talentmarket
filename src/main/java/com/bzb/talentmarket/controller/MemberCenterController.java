@@ -70,7 +70,7 @@ public class MemberCenterController {
     }
 
     /**
-     * 随机红包收入明细
+     * 前往红包收入明细
      * @param model
      * @param openid 粉丝openid
      * @param headimgurl 头像
@@ -97,4 +97,32 @@ public class MemberCenterController {
         return pageInfo;
     }
 
+    /**
+     * 前往推荐会员列表
+     * @param model
+     * @param openid 推荐者openid
+     * @param headimgurl 头像
+     * @param qrcode 二维码
+     * @return
+     */
+    @RequestMapping(value = "/toRecommendMembers", method = RequestMethod.GET)
+    public String toRecommendMembers(Model model, String openid, String headimgurl, String qrcode) {
+        model.addAttribute("openid", openid);
+        model.addAttribute("headimgurl", headimgurl);
+        model.addAttribute("qrcode", qrcode);
+        return "mobile/recommendMembers";
+    }
+
+
+    /**
+     * 获取粉丝推荐的会员列表
+     * @param openid 粉丝的openid
+     * @return
+     */
+    @RequestMapping(value = "/recommendMembers", method = RequestMethod.GET)
+    @ResponseBody
+    public PageInfo<TalentmarketMember> getRecommendMembers(String openid, Integer pageNo, Integer pageSize) {
+        PageInfo<TalentmarketMember> members = memberCenterService.getRecommendMembers(openid, pageNo, pageSize);
+        return members;
+    }
 }

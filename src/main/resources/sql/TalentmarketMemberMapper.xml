@@ -660,4 +660,13 @@
     SET fans_num = fans_num + 1, totalredmoney = totalredmoney + ${randMoney,jdbcType=BIGINT}, upddate = NOW()
     WHERE openid = #{openid,jdbcType=VARCHAR}
   </update>
+  
+  <!--获取推荐者的粉丝列表-->
+  <select id="getRecommendMembersByOpenid" parameterType="java.lang.String" resultMap="BaseResultMap">
+    SELECT
+      openid, nickname, headimgurl, subscribe_status, subscribedate
+    FROM tb_talentmarket_member
+    WHERE
+      fopenid = #{openid,jdbcType=VARCHAR}
+  </select>
 </mapper>

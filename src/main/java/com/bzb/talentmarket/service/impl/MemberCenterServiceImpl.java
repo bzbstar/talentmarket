@@ -87,4 +87,15 @@ public class MemberCenterServiceImpl implements MemberCenterService {
 
         return pageInfo;
     }
+
+    @Override
+    public PageInfo<TalentmarketMember> getRecommendMembers(String openid, Integer pageNo, Integer pageSize) {
+
+        PageHelper.startPage(pageNo, pageSize);
+        List<TalentmarketMember> recommendMembers = memberMapper.getRecommendMembersByOpenid(openid);
+
+        PageInfo<TalentmarketMember> pageInfo = new PageInfo<>(recommendMembers);
+
+        return pageInfo;
+    }
 }

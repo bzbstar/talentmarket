@@ -58,8 +58,10 @@
         <!--粉丝数量 th:text="${member.fansNum}"-->
         <van-row type="flex" justify="center" class="box hsl_center">
             <van-col span="24">
-            	<p style="font-size: 12px;">贡献粉丝</p>
-           		<a href="http://www.baidu.com" style="font-size: 36px;">3</a>
+                <div style="height: 100%;" @click="toRecommendMembers();">
+                    <div style="font-size: 12px;margin: 20px;">贡献粉丝</div>
+                    <div style="font-size: 36px;">3</div>
+                </div>
             </van-col>
         </van-row>
 
@@ -101,6 +103,11 @@
                 // 随机红包记录列表
                 getRedRecords() {
                     window.location.href = /*[[@{/memberCenter/toRedRecords(openid='oqFhA1YfrunnhBasHmsdZ4KCLqok',headimgurl='http://thirdwx.qlogo.cn/mmopen/DzfLC7vAweubs3BgcRTuuMkEfoHlTZkaTQw6M2hUxRDkVBl20vbelTGZ9XsreBq7k7dn7eK1zXiaRpWndboujXsibAkiaf2DERic/132',qrcode='https://w.url.cn/s/AZbx7Ag')}]]*/;
+                },
+
+                // 推荐粉丝记录
+                toRecommendMembers() {
+                    window.location.href = /*[[@{/memberCenter/toRecommendMembers(openid='oqFhA1YfrunnhBasHmsdZ4KCLqok',headimgurl='http://thirdwx.qlogo.cn/mmopen/DzfLC7vAweubs3BgcRTuuMkEfoHlTZkaTQw6M2hUxRDkVBl20vbelTGZ9XsreBq7k7dn7eK1zXiaRpWndboujXsibAkiaf2DERic/132',qrcode='https://w.url.cn/s/AZbx7Ag')}]]*/;
                 }
             }
         })

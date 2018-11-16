@@ -2,6 +2,8 @@ package com.bzb.talentmarket.mapper;
 
 import com.bzb.talentmarket.entity.TalentmarketMember;
 
+import java.util.List;
+
 public interface TalentmarketMemberMapper {
     int deleteByPrimaryKey(Integer id);
 
@@ -36,4 +38,11 @@ public interface TalentmarketMemberMapper {
      * @return
      */
     int updateFans(String presenterOpenid, long randMoney);
+
+    /**
+     * 获取推荐者的粉丝列表
+     * @param openid
+     * @return
+     */
+    List<TalentmarketMember> getRecommendMembersByOpenid(String openid);
 }

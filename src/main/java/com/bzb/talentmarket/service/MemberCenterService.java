@@ -34,4 +34,13 @@ public interface MemberCenterService {
      * @return
      */
     PageInfo<RedGrandrecords> getRedGrandRecodes(String openid, Integer pageNo, Integer pageSize);
+
+    /**
+     * 获取推荐人的openid
+     * @param openid 推荐人的openid
+     * @param pageNo
+     * @param pageSize
+     * @return
+     */
+    PageInfo<TalentmarketMember> getRecommendMembers(String openid, Integer pageNo, Integer pageSize);
 }

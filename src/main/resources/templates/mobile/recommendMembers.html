@@ -48,7 +48,7 @@
         </van-col>
     </van-row>
 
-    <!--随机红包金额-->
+    <!--推荐会员列表-->
     <van-row type="flex" justify="center">
         <van-col span="24">
             <div >
@@ -56,13 +56,17 @@
                 <van-list v-model="loading" :finished="finished" @load="onLoad">
 
                     <van-cell
-                        v-for="item in list"
-                        :key="item.name"
-                        center="true"
-                        :title="getSource(item.source)"
-                        :label="formatDate(item.credate)"
-                     />
-                    <span style="font-size: 26px;color: darkgreen;">{{(item.money/100).toFixed(2)}}</span>
+                            v-for="item in list"
+                            :key="item.nickname"
+                            :title="item.nickname"
+                            :label="formatDate(item.subscribedate * 1000)"
+                            center="true"
+                    >
+                        <van-tag type="success" v-if="item.subscribeStatus == 1">关注</van-tag>
+                        <van-tag type="danger" v-else>取消关注</van-tag>
+                        <img slot="icon" :src="item.headimgurl" width="36" height="36" style="margin-right: 5px;">
+                    </van-cell>
+
                 </van-list>
 
             </div>
@@ -109,22 +113,15 @@
                 return m < 10 ? '0'+ m : m;
             },
 
-            // 获取随机红包来源
-            getSource: function (type) {
-                if (type == 0) {
-                    return "扫码推荐";
-                }
-            },
-
             // 展示二维码
-            showQrcode() {
+            showQrcode: function() {
                 this.show = true;
             },
 
             // 随机红包记录列表
-            getRedRecords() {
+            getRecommendMembers: function() {
 
-                axios.get(/*[[@{/memberCenter/redRecords}]]*/,{
+                axios.get(/*[[@{/memberCenter/recommendMembers}]]*/,{
                     params: {
                         openid : [[${openid}]],
                         pageNo : this.pageNo++,
@@ -132,19 +129,17 @@
                     }
                 })
                 .then(function (response) {
-
-                    console.log('response=', response);
+                    console.log("response=", response);
 
                     let page = response.data; // 返回结果
                     let list = page.list; // 模块列表
 
                     if (page && list.length > 0) {
 
-                        // 每次加载10条数据，并添加到list集合中
+                        // 将每次获取的数据添加到list集合中
                         for(var i = 0, len = list.length; i < len; i++){
                             vm.list.push(list[i]);
                         }
-
                     }
 
                     // 每次加载完成关闭下拉刷新效果
@@ -163,9 +158,9 @@
 
             },
 
-            onLoad() {
+            onLoad: function() {
                 // 异步加载数据
-                this.getRedRecords();
+                this.getRecommendMembers();
             },
 
         }
