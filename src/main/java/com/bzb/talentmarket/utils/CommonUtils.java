@@ -63,6 +63,16 @@ public class CommonUtils {
 		double random = Math.random()*max;
 		return random == 0 ? 0.1 : new BigDecimal(random).setScale(2, BigDecimal.ROUND_HALF_DOWN).doubleValue();
 	}
+	
+	/**
+	 * 
+	 * @Description:获取当前的时间戳，单位s
+	 * @author: bzb
+	 * @time:2018年11月16日 下午11:00:49
+	 */
+	public static long getTimestamp() {
+		return System.currentTimeMillis() / 1000;
+	}
 
 	public static void main(String[] args) {
 		double distance = getDistance(121.491909,31.233234,121.411994,31.206134);

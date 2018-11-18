@@ -14,4 +14,6 @@ public interface TalentmarketKfMapper {
     int updateByPrimaryKeySelective(TalentmarketKf record);
 
     int updateByPrimaryKey(TalentmarketKf record);
+
+	TalentmarketKf getByKfAccount(String kfAccount);
 }

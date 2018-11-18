@@ -53,7 +53,7 @@ public class MemberCenterServiceImpl implements MemberCenterService {
         String qrcode = member.getQrcode();
 
         if (!StringUtils.hasText(qrcode)) { // 推荐二维码为空，生成永久二维码
-            qrcode = wxService.createQrcode("QR_LIMIT_SCENE", openid, member.getBrokeruid());
+            qrcode = wxService.createQrcode("QR_LIMIT_SCENE", openid, member.getKfaccount());
 
             // 转换为短链接
             qrcode = wxService.shorturl(qrcode);

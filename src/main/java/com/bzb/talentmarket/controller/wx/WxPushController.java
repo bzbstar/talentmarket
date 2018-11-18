@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
@@ -89,9 +90,11 @@ public class WxPushController {
 		try (PrintWriter out = response.getWriter()) {
 			
 			// 直接回复SUCCESS，防止微信重复请求
-			out.println("success");
 			
-			wxService.executeMessge(params);
+			String returnMessage = wxService.executeMessge(params);
+			
+			out.println(returnMessage);
+			
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

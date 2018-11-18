@@ -14,12 +14,13 @@
     <result column="invite_status" property="inviteStatus" jdbcType="VARCHAR" />
     <result column="empuid" property="empuid" jdbcType="VARCHAR" />
     <result column="openid" property="openid" jdbcType="VARCHAR" />
+    <result column="phone" property="phone" jdbcType="VARCHAR" />
     <result column="credate" property="credate" jdbcType="TIMESTAMP" />
     <result column="upddate" property="upddate" jdbcType="TIMESTAMP" />
   </resultMap>
   <sql id="Base_Column_List" >
     id, uid, kf_account, kf_nick, kf_id, kf_headimgurl, kf_wx, invite_wx, invite_expire_time, 
-    invite_status, empuid, openid, credate, upddate
+    invite_status, empuid, openid, credate, upddate, phone
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
     select 
@@ -36,12 +37,12 @@
       kf_nick, kf_id, kf_headimgurl, 
       kf_wx, invite_wx, invite_expire_time, 
       invite_status, empuid, openid, 
-      credate, upddate)
+      credate, upddate, phone)
     values (#{id,jdbcType=INTEGER}, #{uid,jdbcType=VARCHAR}, #{kfAccount,jdbcType=VARCHAR}, 
       #{kfNick,jdbcType=VARCHAR}, #{kfId,jdbcType=VARCHAR}, #{kfHeadimgurl,jdbcType=VARCHAR}, 
       #{kfWx,jdbcType=VARCHAR}, #{inviteWx,jdbcType=VARCHAR}, #{inviteExpireTime,jdbcType=BIGINT}, 
       #{inviteStatus,jdbcType=VARCHAR}, #{empuid,jdbcType=VARCHAR}, #{openid,jdbcType=VARCHAR}, 
-      #{credate,jdbcType=TIMESTAMP}, #{upddate,jdbcType=TIMESTAMP})
+      #{credate,jdbcType=TIMESTAMP}, #{upddate,jdbcType=TIMESTAMP}, #{phone,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="com.bzb.talentmarket.entity.TalentmarketKf" >
     insert into tb_talentmarket_kf
@@ -88,6 +89,9 @@
       <if test="upddate != null" >
         upddate,
       </if>
+      <if test="phone != null" >
+        phone,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="id != null" >
@@ -131,6 +135,9 @@
       </if>
       <if test="upddate != null" >
         #{upddate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="phone != null" >
+        #{phone,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
@@ -176,6 +183,9 @@
       <if test="upddate != null" >
         upddate = #{upddate,jdbcType=TIMESTAMP},
       </if>
+      <if test="phone != null" >
+        phone = #{phone,jdbcType=VARCHAR},
+      </if>
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
@@ -193,7 +203,16 @@
       empuid = #{empuid,jdbcType=VARCHAR},
       openid = #{openid,jdbcType=VARCHAR},
       credate = #{credate,jdbcType=TIMESTAMP},
-      upddate = #{upddate,jdbcType=TIMESTAMP}
+      upddate = #{upddate,jdbcType=TIMESTAMP},
+       phone = #{phone,jdbcType=VARCHAR}
     where id = #{id,jdbcType=INTEGER}
   </update>
+  
+  <select id="getByKfAccount" parameterType="java.lang.String" resultMap="BaseResultMap">
+  	select 
+  		<include refid="Base_Column_List"></include>
+  	from tb_talentmarket_kf 
+  	where kf_account = #{kfAccount,jdbcType=VARCHAR} 
+  	limit 1
+  </select>
 </mapper>

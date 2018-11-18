@@ -4,8 +4,10 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import com.bzb.talentmarket.bean.wx.WxProperties;
 import com.bzb.talentmarket.service.WxPushService;
 
 /**
@@ -17,14 +19,14 @@ import com.bzb.talentmarket.service.WxPushService;
 @Service
 public class WxPushServiceImpl implements WxPushService {
 	
-	 @Value("${wx_token}")
-	 private String token;
+	 @Autowired
+	 private WxProperties wxProperties;
 
 	@Override
 	public boolean checkWxSign(String sign, String timestamp, String nonce) {
 		
 		// 1. 将token、timestamp、nonce三个参数进行字典序排序
-		String[] arr = new String[] { token, timestamp, nonce };
+		String[] arr = new String[] { wxProperties.getToken(), timestamp, nonce };
 		Arrays.sort(arr);
 
 		// 2. 将三个参数字符串拼接成一个字符串进行sha1加密

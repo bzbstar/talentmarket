@@ -5,29 +5,40 @@ import java.net.URLEncoder;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Random;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
-import com.bzb.talentmarket.entity.RedGrandrecords;
-import com.bzb.talentmarket.entity.TalentmarketEmployee;
-import com.bzb.talentmarket.entity.TalentmarketGamerules;
-import com.bzb.talentmarket.entity.TalentmarketMember;
-import com.bzb.talentmarket.mapper.*;
-import com.bzb.talentmarket.utils.JsonUtils;
-import com.bzb.talentmarket.utils.UniqueIdUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 
+import com.bzb.talentmarket.bean.wx.KfMessage;
+import com.bzb.talentmarket.bean.wx.TextMessage;
+import com.bzb.talentmarket.bean.wx.TransInfo;
+import com.bzb.talentmarket.bean.wx.WxProperties;
 import com.bzb.talentmarket.common.FinalData;
+import com.bzb.talentmarket.entity.RedGrandrecords;
+import com.bzb.talentmarket.entity.TalentmarketGamerules;
+import com.bzb.talentmarket.entity.TalentmarketKf;
+import com.bzb.talentmarket.entity.TalentmarketMember;
 import com.bzb.talentmarket.exception.WxApiException;
+import com.bzb.talentmarket.mapper.RedGrandrecordsMapper;
+import com.bzb.talentmarket.mapper.TalentmarketEmployeeMapper;
+import com.bzb.talentmarket.mapper.TalentmarketGamerulesMapper;
+import com.bzb.talentmarket.mapper.TalentmarketKfMapper;
+import com.bzb.talentmarket.mapper.TalentmarketMemberMapper;
 import com.bzb.talentmarket.service.WxService;
 import com.bzb.talentmarket.utils.CommonUtils;
-
-import javax.naming.event.ObjectChangeListener;
+import com.bzb.talentmarket.utils.HttpUtils;
+import com.bzb.talentmarket.utils.JsonUtils;
+import com.bzb.talentmarket.utils.MakeOrderUtils;
+import com.bzb.talentmarket.utils.MessageUtils;
+import com.bzb.talentmarket.utils.SignUtils;
+import com.bzb.talentmarket.utils.UniqueIdUtils;
+import com.bzb.talentmarket.utils.XmlUtils;
 
 /**
  * 
@@ -43,13 +54,15 @@ public class WxServiceImpl implements WxService {
 	// 华山路人才市场经纬度， 腾讯高德地图显示
 	private double hslLatitude = 31.3123300000; // 纬度
 	private double hslLongitude = 120.5356100000; // 精度
-
-	// 公众微信号
-	@Value("${wx_wxid}")
-	private String wxid;
+	
+	@Autowired
+	private WxProperties wxProperties;
 	
 	@Autowired
 	private RestTemplate restTemplate;
+	
+	@Autowired
+	private SignUtils signUtils;
 
 	@Autowired
 	private TalentmarketMemberMapper memberMapper;
@@ -59,15 +72,12 @@ public class WxServiceImpl implements WxService {
 
 	@Autowired
 	private TalentmarketEmployeeMapper employeeMapper;
+	
+	@Autowired
+	private TalentmarketKfMapper KfMapper;
 
 	@Autowired
 	private RedGrandrecordsMapper redMapper;
-
-	@Value("${wx_appid}")
-	private String appid;
-
-	@Value("${wx_secret}")
-	private String secret;
 
 	@Override
 	public String getAccessToken(String appid, String secret) {
@@ -94,7 +104,7 @@ public class WxServiceImpl implements WxService {
 
 	@Override
 	public String getAccessToken() {
-		return getAccessToken(appid, secret);
+		return getAccessToken(wxProperties.getAppid(), wxProperties.getSecret());
 	}
 
 	@Override
@@ -138,8 +148,14 @@ public class WxServiceImpl implements WxService {
 	}
 
 	@Override
-	public void executeMessge(Map<String, String> params) {
+	public String executeMessge(Map<String, String> params) {
+		
+		// TODO, 消息的排重问题待解决
+		
 		log.info("处理微信发送过来的消息， map={}", params);
+		
+		// 给微信的返回信息
+		String returnMessage = "success";
 		
 		String fromUserName = params.get("FromUserName"); //消息来源用户标识
 		String toUserName = params.get("ToUserName"); //消息目的用户标识
@@ -158,14 +174,16 @@ public class WxServiceImpl implements WxService {
 					log.info("扫码关注事件， ticket={}", CommonUtils.objToStr(params.get("Ticket")));
 
 					scanQrcode(fromUserName, FinalData.Wx.EVENT_SUBSCIBE, scene);
-				} else { // 其他关注时间
-
+				} else { // 其他关注事件
+						
 				}
 			} else if (FinalData.Wx.EVENT_UNSUBSCRIBE.equals(event)) { // 取消订阅
 				log.info("取消关注事件推送， openid={}", fromUserName);
 				unsubscibe(fromUserName);
 			} else if (FinalData.Wx.EVENT_LOCATION.equals(event)) { // 上报地理位置事件
-
+				
+				
+				
 				Double latitude = Double.parseDouble(CommonUtils.objToStr(params.get("Latitude")));
 				Double longitude = Double.parseDouble(CommonUtils.objToStr(params.get("Longitude")));
 				Double precision = Double.parseDouble(CommonUtils.objToStr(params.get("Precision")));
@@ -178,7 +196,72 @@ public class WxServiceImpl implements WxService {
 				scanQrcode(fromUserName, FinalData.Wx.EVENT_SCAN, scene);
 			}
 			
+		} else if (FinalData.Wx.MSGTYPE_TEXT.equals(msgType)) { // 文本消息
+			
+			// 粉丝发送过来的文本消息
+			String content = params.get("Content");
+			
+			// 文本消息转发到客服
+//			returnMessage = sendMessageToKf(fromUserName);
+			
+			returnMessage = forwardTextMessage(fromUserName, content); 
 		}
+		
+		return returnMessage;
+	}
+	
+	/**
+	 * 
+	 * @Description:转发粉丝发送过来的文本消息
+	 * @param openid 粉丝的openid
+	 * @param content 粉丝发送的内容
+	 * @return
+	 * @exception:
+	 * @author: bzb
+	 * @time:2018年11月17日 上午11:51:55
+	 */
+	private String forwardTextMessage(String openid, String content) {
+		log.info("转发粉丝发送过来的内容,openid={},content={}", openid, content);
+		
+		// 获取粉丝openid对应的客服账号
+		TalentmarketMember member = memberMapper.getByOpenid(openid);
+		
+		TextMessage textMessage = new TextMessage();
+		textMessage.setFromUserName(wxProperties.getWxid());
+		textMessage.setToUserName(member.getKfaccount());
+		textMessage.setMsgType("text");
+		textMessage.setCreateTime(new Date().getTime());
+		textMessage.setContent(content);
+		String returnMessage = MessageUtils.textMessageToXml(textMessage);
+		log.info("回复内容textMessage={}", returnMessage);
+		return returnMessage;
+	}
+
+	/**
+	 * 
+	 * @Description:发送客服消息
+	 * @param openid
+	 * @return
+	 * @exception:
+	 * @author: bzb
+	 * @time:2018年11月16日 下午10:57:28
+	 */
+	private String sendMessageToKf(String openid) {
+		log.info("发送客服消息");
+		
+		// 获取粉丝openid对应的客服账号
+		TalentmarketMember member = memberMapper.getByOpenid(openid);
+		
+		KfMessage kfMessage = new KfMessage();
+		kfMessage.setToUserName(openid);
+		kfMessage.setFromUserName(wxProperties.getWxid());
+		kfMessage.setCreateTime(CommonUtils.getTimestamp());
+		kfMessage.setMsgType(FinalData.Wx.MSGTYPE_TRANSFER_CUSTOMER_SERVICE);
+		kfMessage.setTransInfo(new TransInfo(member.getKfaccount()));
+		
+		String returnMessage = XmlUtils.toXML(kfMessage);
+		log.info("回复的客服消息，returnMsg={}", returnMessage);
+		return returnMessage;
 	}
 
 	/**
@@ -199,12 +282,12 @@ public class WxServiceImpl implements WxService {
 		// 推荐者的openid
 		String presenterOpenid = sceneArr[0];
 
-		// 经纪人ID
-		String agentId = sceneArr[1];
+		// 客服账号
+		String kfAccount = sceneArr[1];
 
 		// 判断经纪人ID是否为空，为空则表示该推荐者为经纪人，不推送微信经纪人消息
-		if (StringUtils.hasText(agentId)) {
-			sendAgentMessage(openid, agentId);
+		if (StringUtils.hasText(kfAccount)) {
+			sendAgentMessage(openid, kfAccount);
 		}
 
 		// 获取当前粉丝信息
@@ -228,7 +311,7 @@ public class WxServiceImpl implements WxService {
 		}
 
 		// 通过则调用Api进行微信转账
-		grandRandRed(openid, presenterOpenid, agentId, gamerules.getMaxred());
+		grandRandRed(openid, presenterOpenid, kfAccount, gamerules.getMaxred());
 	}
 
 	/**
@@ -236,22 +319,22 @@ public class WxServiceImpl implements WxService {
 	 * @param openid 粉丝openid
 	 * @param agentId 经纪人id
 	 */
-	private void sendAgentMessage(String openid, String agentId) {
+	private void sendAgentMessage(String openid, String kfAccount) {
 		log.info("推送经纪人消息");
 
-		// 根据id获取经纪人id
-		TalentmarketEmployee employee = employeeMapper.selectByPrimaryKey(Integer.parseInt(agentId));
-		if (employee == null) {
+		// 根据客服账号获取客服信息
+		TalentmarketKf kf = KfMapper.getByKfAccount(kfAccount);
+		if (kf == null) {
 			log.error("经纪人不存在，this is a bug");
 			throw new WxApiException("经纪人不存在，this is a bug");
 		}
 
-		String phone = employee.getPhone();
-		String wxid = employee.getWxid();
+		String phone = kf.getPhone();
+		String wxid = kf.getKfWx();
 
 		StringBuilder content = new StringBuilder();
 		content.append("感谢您关注\"华山路人才市场公众号\"\n\n")
-				.append("我是您的经纪人：").append(employee.getNickname());
+				.append("我是您的经纪人：").append(kf.getKfNick());
 		if (phone.equals(wxid)) {
 			content.append("电话/微信：" + phone).append("\n");
 		} else {
@@ -267,10 +350,10 @@ public class WxServiceImpl implements WxService {
 	 * 发放随机红包
 	 * @param openid 粉丝的openid
 	 * @param presenterOpenid 推荐人的openid
-	 * @param agentId 经纪人id
+	 * @param kfAccount 客服账号
 	 * @param maxred 随机红包最大值
 	 */
-	private void grandRandRed(String openid, String presenterOpenid, String agentId, int maxred) {
+	private void grandRandRed(String openid, String presenterOpenid, String kfAccount, int maxred) {
 		log.info("发放随机红包");
 
 		// 计算随机红包金额
@@ -291,7 +374,7 @@ public class WxServiceImpl implements WxService {
 		TalentmarketMember fans = new TalentmarketMember();
 		fans.setOpenid(openid);
 		fans.setFopenid(presenterOpenid); // 推荐人
-		fans.setAge(Integer.parseInt(agentId)); // 经纪人id
+		fans.setKfaccount(kfAccount); // 经纪人id
 		fans.setRedStatus((byte) FinalData.Member.REDSTATUS_DRAWED);
 		fans.setUpddate(new Date());
 		memberMapper.insertSelective(fans);
@@ -495,14 +578,14 @@ public class WxServiceImpl implements WxService {
 	}
 
 	@Override
-	public void addKf(String kfAccount, String nickname) {
+	public void addKf(String kfPre, String nickname) {
 		log.info("添加客服账号");
 
 		String accessToken = getAccessToken();
 
 		// 请求参数
 		Map<String, Object> params = new HashMap<>();
-		params.put("kf_account",  "kf2001@" + wxid);
+		params.put("kf_account",  kfPre + "@" + wxProperties.getWxid());
 		params.put("nickname", nickname);
 
 		Map<String, Object> resultMap = restTemplate.postForObject("https://api.weixin.qq.com/customservice/kfaccount/add?access_token=" + accessToken,
@@ -539,15 +622,8 @@ public class WxServiceImpl implements WxService {
 	public Map<String, Object> getAccessTokenByCode(String code) {
 		log.info("通过授权code获取opedid, code={}", code);
 
-		// 参数
-		Map<String, Object> params = new HashMap<>();
-		params.put("appid", appid);
-		params.put("secret", secret);
-		params.put("grant_type", "authorization_code");
-		params.put("code", code);
-
 		String resultJson = restTemplate.getForObject("https://api.weixin.qq.com/sns/oauth2/access_token?appid={APPID}&secret={SECRET}&code={CODE}&grant_type=authorization_code", String.class,
-				appid, secret, code);
+				wxProperties.getAppid(), wxProperties.getSecret(), code);
 		log.info("根据code获取openid返回结果， result={}", resultJson);
 
 		Map<String, Object> result = JsonUtils.fromJson(resultJson, Map.class);
@@ -571,7 +647,7 @@ public class WxServiceImpl implements WxService {
 
 		StringBuilder redirectUrl = new StringBuilder();
 		redirectUrl.append("https://open.weixin.qq.com/connect/oauth2/authorize?")
-				.append("appid=").append(appid)
+				.append("appid=").append(wxProperties.getAppid())
 				.append("&redirect_uri=").append(url)
 				.append("&response_type=code")
 				.append("&scope=").append(scope)
@@ -580,4 +656,90 @@ public class WxServiceImpl implements WxService {
 		log.info("授权地址， redirectUrl={}", redirectUrl);
 		return redirectUrl.toString();
 	}
+
+	@Override
+	public void payToChange(String openid, String username, long money, String desc, String ip) {
+		log.info("企业付款到零钱");
+		
+		// 参数
+		SortedMap<Object, Object> params = new TreeMap<>();
+		params.put("mch_appid", wxProperties.getAppid()); // 商户账号appid
+		params.put("mchid", wxProperties.getMchid());// 商户号
+		// 微信支付分配的终端设备号, 非必填
+		params.put("nonce_str", UniqueIdUtils.getUUID()); // 随机字符串
+		params.put("partner_trade_no", MakeOrderUtils.generateOrderno()); // 商户订单号，需保持唯一性(只能是字母或者数字，不能包含有其他字符)
+		params.put("openid", openid); // 粉丝的openid
+		params.put("check_name", FinalData.Wx.CHECK_NAME_NO_CHECK); // 不校验真实姓名 
+		params.put("re_user_name", username); // 收款用户真实姓名。 如果check_name设置为FORCE_CHECK，则必填用户真实姓名
+		params.put("amount", money); // 企业付款金额，单位为分 
+		params.put("desc", desc); // 企业付款备注，必填。
+		params.put("spbill_create_ip", ip); // 	该IP同在商户平台设置的IP白名单中的IP没有关联，该IP可传用户端或者服务端的IP。
+		// 签名
+		params.put("sign", signUtils.creatWxSign(params));
+		
+		// map转换为xml
+		String xmlParams = XmlUtils.toXml(params);
+		
+		String url = "https://api.mch.weixin.qq.com/mmpaymkttransfers/promotion/transfers";
+		String resultStr = HttpUtils.posts(url, xmlParams);
+		log.info("企业付款返回结果result={}", resultStr);
+		
+		// xml转Map
+		Map<String, String> result = null;
+		try {
+			result = XmlUtils.xmlToMap(resultStr);
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.error("xml转换为map异常");
+		}
+		if (resultStr == null || "FAIL".equals(result.get("return_code"))) {
+			log.error("调用微信接口-企业付款到零钱失败，reason is {}", result);
+		}
+		log.info("付款返回result={}", result);
+	}
+
+	@Override
+	public void grantCashbonus(String openid, long money, String ip) {
+		log.info("发放现金红包");
+		
+		// 参数
+		SortedMap<Object, Object> params = new TreeMap<>();
+		params.put("nonce_str", UniqueIdUtils.getUUID()); // 随机字符串
+		params.put("mch_billno", MakeOrderUtils.generateOrderno()); // 商户订单号（每个订单号必须唯一。取值范围：0~9，a~z，A~Z），接口根据商户订单号支持重入，如出现超时可再调用。
+		params.put("mch_id", wxProperties.getMchid());// 商户号
+		params.put("wxappid", wxProperties.getAppid()); // 公众账号appid
+		params.put("send_name", "华山路人才市场"); // 红包发送者名称
+		params.put("re_openid", openid); // 粉丝的openid
+		params.put("total_amount", money); // 红包发放金额，单位分
+		params.put("total_num", 1); // 	红包发放总人数
+		params.put("wishing", "感谢参与扫码推荐活动，祝您生活愉快"); // 红包祝福语
+		params.put("client_ip", ip); // 调用接口的机器Ip地址
+		params.put("act_name", "扫码推荐活动"); // 活动名称
+		params.put("remark", "扫码推荐好友越多，奖励越丰厚"); // 备注信息
+		params.put("scene_id", "PRODUCT_1"); // 场景id
+		// 签名
+		params.put("sign", signUtils.creatWxSign(params));
+		
+		// map转换为xml
+		String xmlParams = XmlUtils.toXml(params);
+		
+		String url = "https://api.mch.weixin.qq.com/mmpaymkttransfers/sendredpack";
+		String resultStr = HttpUtils.posts(url, xmlParams);
+		log.info("企业付款返回结果result={}", resultStr);
+		
+//				// xml转Map
+//				Map<String, String> result = null;
+//				try {
+//					result = XmlUtils.xmlToMap(resultStr);
+//				} catch (Exception e) {
+//					e.printStackTrace();
+//					log.error("xml转换为map异常");
+//				}
+//				if (resultStr == null || "FAIL".equals(result.get("return_code"))) {
+//					log.error("调用微信接口-企业付款到零钱失败，reason is {}", result);
+//				}
+//				log.info("付款返回result={}", result);
+	}
+	
+	
 }

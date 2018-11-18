@@ -2,49 +2,40 @@ package com.bzb.talentmarket.bean.wx;
 
 public class BaseMessage {
 	// 消息接受方，开发者的微信号
-	private String toUserName; 
+	private String ToUserName; 
 	// 发送方账号，粉丝openid
-	private String fromUserName;
+	private String FromUserName;
 	// 消息创建时间（整型）
-	private long createTime;
-	// 消息类型,event
-	private String msgType;
-	// Event, 事件类型，subscribe
-	private String event;
+	private long CreateTime;
+	private String MsgType; // 消息类型
 	public String getToUserName() {
-		return toUserName;
+		return ToUserName;
 	}
 	public void setToUserName(String toUserName) {
-		this.toUserName = toUserName;
+		ToUserName = toUserName;
 	}
 	public String getFromUserName() {
-		return fromUserName;
+		return FromUserName;
 	}
 	public void setFromUserName(String fromUserName) {
-		this.fromUserName = fromUserName;
+		FromUserName = fromUserName;
 	}
 	public long getCreateTime() {
-		return createTime;
+		return CreateTime;
 	}
 	public void setCreateTime(long createTime) {
-		this.createTime = createTime;
+		CreateTime = createTime;
 	}
 	public String getMsgType() {
-		return msgType;
+		return MsgType;
 	}
 	public void setMsgType(String msgType) {
-		this.msgType = msgType;
-	}
-	public String getEvent() {
-		return event;
-	}
-	public void setEvent(String event) {
-		this.event = event;
+		MsgType = msgType;
 	}
 	@Override
 	public String toString() {
-		return "WxMessage [toUserName=" + toUserName + ", fromUserName=" + fromUserName + ", createTime=" + createTime
-				+ ", msgType=" + msgType + ", event=" + event + "]";
+		return "BaseMessage [ToUserName=" + ToUserName + ", FromUserName=" + FromUserName + ", CreateTime=" + CreateTime
+				+ ", MsgType=" + MsgType + "]";
 	}
 
 }

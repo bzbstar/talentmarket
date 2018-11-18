@@ -39,9 +39,10 @@ public interface WxService {
 	 * @param params
 	 * @exception:
 	 * @author: bzb
+	 * @return String 回复给微信的消息
 	 * @time:2018年11月11日 下午10:01:34
 	 */
-	void executeMessge(Map<String, String> params);
+	String executeMessge(Map<String, String> params);
 
 	/**
 	 * 调用接口获取用户基本信息
@@ -93,4 +94,24 @@ public interface WxService {
 	 * @return
 	 */
 	String getAuthRedirectUrl(String scope, String state, String redirectUri);
+	
+	/**
+	 * 
+	 * @Description:企业付款到零钱
+	 * @exception:
+	 * @author: bzb
+	 * @time:2018年11月17日 下午6:00:10
+	 */
+	void payToChange(String openid, String username, long money, String desc, String ip);
+	
+	/**
+	 * 
+	 * @Description:发送现金红包
+	 * @param openid 粉丝的opneid
+	 * @param money 单位分
+	 * @exception:
+	 * @author: bzb
+	 * @time:2018年11月18日 下午7:35:25
+	 */
+	void grantCashbonus(String openid, long money, String ip);
 }

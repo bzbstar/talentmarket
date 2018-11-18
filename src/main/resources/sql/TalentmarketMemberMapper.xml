@@ -23,7 +23,7 @@
     <result column="counties" property="counties" jdbcType="VARCHAR" />
     <result column="address" property="address" jdbcType="VARCHAR" />
     <result column="memberlevel" property="memberlevel" jdbcType="TINYINT" />
-    <result column="brokeruid" property="brokeruid" jdbcType="VARCHAR" />
+    <result column="kfaccount" property="kfaccount" jdbcType="VARCHAR" />
     <result column="fopenid" property="fopenid" jdbcType="VARCHAR" />
     <result column="unionid" property="unionid" jdbcType="VARCHAR" />
     <result column="remark" property="remark" jdbcType="VARCHAR" />
@@ -35,7 +35,7 @@
     <result column="qrcode" property="qrcode" jdbcType="VARCHAR" />
     <result column="fans_num" property="fansNum" jdbcType="INTEGER" />
     <result column="totalredmoney" property="totalredmoney" jdbcType="BIGINT" />
-    <result column="isbroker" property="isbroker" jdbcType="TINYINT" />
+    <result column="iskf" property="iskf" jdbcType="TINYINT" />
     <result column="subscribe_status" property="subscribeStatus" jdbcType="TINYINT" />
     <result column="red_status" property="redStatus" jdbcType="TINYINT" />
     <result column="subscribedate" property="subscribedate" jdbcType="BIGINT" />
@@ -48,9 +48,9 @@
   </resultMap>
   <sql id="Base_Column_List" >
     id, uid, openid, nickname, realname, sex, age, idcardno, wxid, phone, qq, email,
-    headimgurl, `yuyan`, country, province, city, counties, address, memberlevel, brokeruid,
+    headimgurl, `yuyan`, country, province, city, counties, address, memberlevel, kfaccount,
     fopenid, unionid, remark, groupid, tagid_list, subscribe_scene, qr_scene, qr_scene_str, 
-    qrcode, fans_num, totalredmoney, isbroker, subscribe_status, red_status, subscribedate,
+    qrcode, fans_num, totalredmoney, iskf, subscribe_status, red_status, subscribedate,
     `geoglatitude`, `geoglongitude`, `geogprecision`, credate, upddate
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
@@ -79,11 +79,11 @@
       phone, qq, email, headimgurl, 
       yuyan, country, province,
       city, counties, address, 
-      memberlevel, brokeruid, fopenid,
+      memberlevel, kfaccount, fopenid,
       unionid, remark, groupid, 
       tagid_list, subscribe_scene, qr_scene, 
       qr_scene_str, qrcode, fans_num, 
-      totalredmoney, isbroker, subscribe_status, 
+      totalredmoney, iskf, subscribe_status, 
       red_status, subscribedate, geoglatitude, geoglongitude,
       geogprecision, credate, upddate)
     values (#{id,jdbcType=INTEGER}, #{uid,jdbcType=VARCHAR}, #{openid,jdbcType=VARCHAR}, 
@@ -92,11 +92,11 @@
       #{phone,jdbcType=VARCHAR}, #{qq,jdbcType=VARCHAR}, #{email,jdbcType=VARCHAR}, #{headimgurl,jdbcType=VARCHAR}, 
       #{yuyan,jdbcType=VARCHAR}, #{country,jdbcType=VARCHAR}, #{province,jdbcType=VARCHAR},
       #{city,jdbcType=VARCHAR}, #{counties,jdbcType=VARCHAR}, #{address,jdbcType=VARCHAR}, 
-      #{memberlevel,jdbcType=TINYINT}, #{brokeruid,jdbcType=VARCHAR}, #{fopenid,jdbcType=VARCHAR},
+      #{memberlevel,jdbcType=TINYINT}, #{kfaccount,jdbcType=VARCHAR}, #{fopenid,jdbcType=VARCHAR},
       #{unionid,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR}, #{groupid,jdbcType=INTEGER},
       #{tagidList,jdbcType=VARCHAR}, #{subscribeScene,jdbcType=VARCHAR}, #{qrScene,jdbcType=INTEGER},
       #{qrSceneStr,jdbcType=VARCHAR}, #{qrcode,jdbcType=VARCHAR}, #{fansNum,jdbcType=INTEGER}, 
-      #{totalredmoney,jdbcType=BIGINT}, #{isbroker,jdbcType=TINYINT}, #{subscribeStatus,jdbcType=TINYINT}, 
+      #{totalredmoney,jdbcType=BIGINT}, #{iskf,jdbcType=TINYINT}, #{subscribeStatus,jdbcType=TINYINT}, 
       #{redStatus,jdbcType=TINYINT}, #{subscribedate,jdbcType=BIGINT}, #{geoglatitude,jdbcType=DOUBLE},
       #{geoglatitude,jdbcType=DOUBLE}, #{geoglongitude,jdbcType=DOUBLE}, #{geogprecision,jdbcType=DOUBLE},
       #{credate,jdbcType=TIMESTAMP}, #{upddate,jdbcType=TIMESTAMP})
@@ -164,8 +164,8 @@
       <if test="memberlevel != null" >
         memberlevel,
       </if>
-      <if test="brokeruid != null" >
-        brokeruid,
+      <if test="kfaccount != null" >
+        kfaccount,
       </if>
       <if test="fopenid != null" >
         fopenid,
@@ -200,8 +200,8 @@
       <if test="totalredmoney != null" >
         totalredmoney,
       </if>
-      <if test="isbroker != null" >
-        isbroker,
+      <if test="iskf != null" >
+        iskf,
       </if>
       <if test="subscribeStatus != null" >
         subscribe_status,
@@ -289,8 +289,8 @@
       <if test="memberlevel != null" >
         #{memberlevel,jdbcType=TINYINT},
       </if>
-      <if test="brokeruid != null" >
-        #{brokeruid,jdbcType=VARCHAR},
+      <if test="kfaccount != null" >
+        #{kfaccount,jdbcType=VARCHAR},
       </if>
       <if test="fopenid != null" >
         #{fopenid,jdbcType=VARCHAR},
@@ -325,8 +325,8 @@
       <if test="totalredmoney != null" >
         #{totalredmoney,jdbcType=BIGINT},
       </if>
-      <if test="isbroker != null" >
-        #{isbroker,jdbcType=TINYINT},
+      <if test="iskf != null" >
+        #{iskf,jdbcType=TINYINT},
       </if>
       <if test="subscribeStatus != null" >
         #{subscribeStatus,jdbcType=TINYINT},
@@ -414,8 +414,8 @@
       <if test="memberlevel != null" >
         memberlevel = #{memberlevel,jdbcType=TINYINT},
       </if>
-      <if test="brokeruid != null" >
-        brokeruid = #{brokeruid,jdbcType=VARCHAR},
+      <if test="kfaccount != null" >
+        kfaccount = #{kfaccount,jdbcType=VARCHAR},
       </if>
       <if test="fopenid != null" >
         fopenid = #{fopenid,jdbcType=VARCHAR},
@@ -450,8 +450,8 @@
       <if test="totalredmoney != null" >
         totalredmoney = #{totalredmoney,jdbcType=BIGINT},
       </if>
-      <if test="isbroker != null" >
-        isbroker = #{isbroker,jdbcType=TINYINT},
+      <if test="iskf != null" >
+        iskf = #{iskf,jdbcType=TINYINT},
       </if>
       <if test="subscribeStatus != null" >
         subscribe_status = #{subscribeStatus,jdbcType=TINYINT},
@@ -542,8 +542,8 @@
       <if test="memberlevel != null" >
         memberlevel = #{memberlevel,jdbcType=TINYINT},
       </if>
-      <if test="brokeruid != null" >
-        brokeruid = #{brokeruid,jdbcType=VARCHAR},
+      <if test="kfaccount != null" >
+        kfaccount = #{kfaccount,jdbcType=VARCHAR},
       </if>
       <if test="fopenid != null" >
         fopenid = #{fopenid,jdbcType=VARCHAR},
@@ -578,8 +578,8 @@
       <if test="totalredmoney != null" >
         totalredmoney = #{totalredmoney,jdbcType=BIGINT},
       </if>
-      <if test="isbroker != null" >
-        isbroker = #{isbroker,jdbcType=TINYINT},
+      <if test="iskf != null" >
+        iskf = #{iskf,jdbcType=TINYINT},
       </if>
       <if test="subscribeStatus != null" >
         subscribe_status = #{subscribeStatus,jdbcType=TINYINT},
@@ -630,7 +630,7 @@
       counties = #{counties,jdbcType=VARCHAR},
       address = #{address,jdbcType=VARCHAR},
       memberlevel = #{memberlevel,jdbcType=TINYINT},
-      brokeruid = #{brokeruid,jdbcType=VARCHAR},
+      kfaccount = #{kfaccount,jdbcType=VARCHAR},
       fopenid = #{fopenid,jdbcType=VARCHAR},
       unionid = #{unionid,jdbcType=VARCHAR},
       remark = #{remark,jdbcType=VARCHAR},
@@ -642,7 +642,7 @@
       qrcode = #{qrcode,jdbcType=VARCHAR},
       fans_num = #{fansNum,jdbcType=INTEGER},
       totalredmoney = #{totalredmoney,jdbcType=BIGINT},
-      isbroker = #{isbroker,jdbcType=TINYINT},
+      iskf = #{iskf,jdbcType=TINYINT},
       subscribe_status = #{subscribeStatus,jdbcType=TINYINT},
       red_status = #{redStatus,jdbcType=TINYINT},
       subscribedate = #{subscribedate,jdbcType=BIGINT},

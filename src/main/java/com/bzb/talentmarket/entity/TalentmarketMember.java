@@ -41,7 +41,7 @@ public class TalentmarketMember {
 
     private Byte memberlevel;
 
-    private String brokeruid;
+    private String kfaccount;
 
     private String fopenid;
 
@@ -65,7 +65,7 @@ public class TalentmarketMember {
 
     private Long totalredmoney;
 
-    private Byte isbroker;
+    private Byte iskf;
 
     private Byte subscribeStatus;
 
@@ -237,14 +237,6 @@ public class TalentmarketMember {
         this.memberlevel = memberlevel;
     }
 
-    public String getBrokeruid() {
-        return brokeruid;
-    }
-
-    public void setBrokeruid(String brokeruid) {
-        this.brokeruid = brokeruid == null ? null : brokeruid.trim();
-    }
-
     public String getFopenid() {
         return fopenid;
     }
@@ -333,14 +325,6 @@ public class TalentmarketMember {
         this.totalredmoney = totalredmoney;
     }
 
-    public Byte getIsbroker() {
-        return isbroker;
-    }
-
-    public void setIsbroker(Byte isbroker) {
-        this.isbroker = isbroker;
-    }
-
     public Byte getSubscribeStatus() {
         return subscribeStatus;
     }
@@ -413,50 +397,19 @@ public class TalentmarketMember {
         this.wxid = wxid;
     }
 
-    @Override
-    public String toString() {
-        return "TalentmarketMember{" +
-                "id=" + id +
-                ", uid='" + uid + '\'' +
-                ", openid='" + openid + '\'' +
-                ", nickname='" + nickname + '\'' +
-                ", realname='" + realname + '\'' +
-                ", sex=" + sex +
-                ", age=" + age +
-                ", idcardno='" + idcardno + '\'' +
-                ", phone='" + phone + '\'' +
-                ", qq='" + qq + '\'' +
-                ", email='" + email + '\'' +
-                ", headimgurl='" + headimgurl + '\'' +
-                ", yuyan='" + yuyan + '\'' +
-                ", country='" + country + '\'' +
-                ", province='" + province + '\'' +
-                ", city='" + city + '\'' +
-                ", counties='" + counties + '\'' +
-                ", address='" + address + '\'' +
-                ", memberlevel=" + memberlevel +
-                ", brokeruid='" + brokeruid + '\'' +
-                ", fopenid='" + fopenid + '\'' +
-                ", unionid='" + unionid + '\'' +
-                ", remark='" + remark + '\'' +
-                ", groupid=" + groupid +
-                ", tagidList='" + tagidList + '\'' +
-                ", subscribeScene='" + subscribeScene + '\'' +
-                ", qrScene=" + qrScene +
-                ", qrSceneStr='" + qrSceneStr + '\'' +
-                ", qrcode='" + qrcode + '\'' +
-                ", fansNum=" + fansNum +
-                ", totalredmoney=" + totalredmoney +
-                ", isbroker=" + isbroker +
-                ", subscribeStatus=" + subscribeStatus +
-                ", redStatus=" + redStatus +
-                ", subscribedate=" + subscribedate +
-                ", geoglatitude=" + geoglatitude +
-                ", geoglongitude=" + geoglongitude +
-                ", geogprecision=" + geogprecision +
-                ", wxid='" + wxid + '\'' +
-                ", credate=" + credate +
-                ", upddate=" + upddate +
-                '}';
-    }
+	public String getKfaccount() {
+		return kfaccount;
+	}
+
+	public void setKfaccount(String kfaccount) {
+		this.kfaccount = kfaccount;
+	}
+
+	public Byte getIskf() {
+		return iskf;
+	}
+
+	public void setIskf(Byte iskf) {
+		this.iskf = iskf;
+	}
 }

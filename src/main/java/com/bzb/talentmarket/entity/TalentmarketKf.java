@@ -10,8 +10,9 @@ public class TalentmarketKf {
     private String kfAccount;
 
     private String kfNick;
+    private String phone;
 
-    private String kfId;
+	private String kfId;
 
     private String kfHeadimgurl;
 
@@ -142,4 +143,12 @@ public class TalentmarketKf {
     public void setUpddate(Date upddate) {
         this.upddate = upddate;
     }
+    public String getPhone() {
+		return phone;
+	}
+
+	public void setPhone(String phone) {
+		this.phone = phone;
+	}
+
 }
