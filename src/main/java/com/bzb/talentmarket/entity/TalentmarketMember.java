@@ -65,7 +65,7 @@ public class TalentmarketMember {
 
     private Long totalredmoney;
 
-    private Byte iskf;
+    private Byte isagent;
 
     private Byte subscribeStatus;
 
@@ -84,8 +84,6 @@ public class TalentmarketMember {
     private Date credate;
 
     private Date upddate;
-
-    private Integer isheader;
 
     public Integer getId() {
         return id;
@@ -109,14 +107,6 @@ public class TalentmarketMember {
 
     public void setOpenid(String openid) {
         this.openid = openid == null ? null : openid.trim();
-    }
-
-    public Integer getIsheader() {
-        return isheader;
-    }
-
-    public void setIsheader(Integer isheader) {
-        this.isheader = isheader;
     }
 
     public String getNickname() {
@@ -371,7 +361,15 @@ public class TalentmarketMember {
         return upddate;
     }
 
-    public void setUpddate(Date upddate) {
+    public Byte getIsagent() {
+		return isagent;
+	}
+
+	public void setIsagent(Byte isagent) {
+		this.isagent = isagent;
+	}
+
+	public void setUpddate(Date upddate) {
         this.upddate = upddate;
     }
 
@@ -413,13 +411,5 @@ public class TalentmarketMember {
 
 	public void setKfaccount(String kfaccount) {
 		this.kfaccount = kfaccount;
-	}
-
-	public Byte getIskf() {
-		return iskf;
-	}
-
-	public void setIskf(Byte iskf) {
-		this.iskf = iskf;
 	}
 }

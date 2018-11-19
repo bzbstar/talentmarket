@@ -134,7 +134,7 @@ public class MemberCenterController {
      * @param isHead 是否总部经纪人
      * @return
      */
-    public ResultModel authToAgent(String openid, String phone, String wxid, Integer isHead) {
-        return memberCenterService.authToAgent(openid, phone, wxid, isHead);
+    public ResultModel authToAgent(String openid, String phone, String wxid, Integer isHead, String password) {
+        return memberCenterService.authToAgent(openid, phone, wxid, isHead, password);
     }
 }

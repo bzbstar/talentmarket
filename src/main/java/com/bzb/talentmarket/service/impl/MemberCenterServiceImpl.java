@@ -6,15 +6,18 @@ import com.bzb.talentmarket.entity.RedGrandrecords;
 import com.bzb.talentmarket.entity.TalentmarketMember;
 import com.bzb.talentmarket.exception.WxApiException;
 import com.bzb.talentmarket.mapper.RedGrandrecordsMapper;
+import com.bzb.talentmarket.mapper.TalentmarketGamerulesMapper;
 import com.bzb.talentmarket.mapper.TalentmarketMemberMapper;
 import com.bzb.talentmarket.service.MemberCenterService;
 import com.bzb.talentmarket.service.WxService;
+import com.bzb.talentmarket.utils.MD5Utils;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.actuate.autoconfigure.metrics.export.ganglia.GangliaMetricsExportAutoConfiguration;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -42,6 +45,8 @@ public class MemberCenterServiceImpl implements MemberCenterService {
 
     @Value("${membercenter_url}")
     private String memberCenterUrl;
+    
+    private TalentmarketGamerulesMapper gamerulesMapper;
 
     @Override
     public TalentmarketMember getByAuthOpenid(String openid) {
@@ -102,24 +107,28 @@ public class MemberCenterServiceImpl implements MemberCenterService {
     }
 
     @Override
-    public ResultModel authToAgent(String openid, String phone, String wxid, Integer isHead) {
+    public ResultModel authToAgent(String openid, String phone, String wxid, Integer isHeader, 
+    		String password) {
         log.info("授权成为经纪人");
 
-        ResultModel resultModel = checkAuthAgent(phone, wxid, isHead);
+        ResultModel resultModel = checkAuthAgent(phone, wxid, isHeader, password);
         if (resultModel != null) {
             return resultModel;
         }
 
         // 根据openid更新经纪人状态
         TalentmarketMember member = new TalentmarketMember();
+        member.setOpenid(openid);
+        member.setPhone(phone); // 手机号
+        member.setWxid(wxid); // 微信号
         member.setUpddate(new Date());
-        if (isHead == FinalData.Member.HEADER_AGENT) { // 总部经纪人
-
-        } else {
-
-        }
-
-        return null;
+        
+        // 是否总部经纪人
+        isHeader = FinalData.Member.HEADER_AGENT == isHeader ? 
+        		FinalData.Member.HEADER_AGENT : FinalData.Member.COMMON_AGENT;
+        
+        memberMapper.updateByOpenid(member);
+        return new ResultModel(true, "SUCCESS");
     }
 
     /**
@@ -129,7 +138,7 @@ public class MemberCenterServiceImpl implements MemberCenterService {
      * @param isHead
      * @return
      */
-    private ResultModel checkAuthAgent(String phone, String wxid, Integer isHead) {
+    private ResultModel checkAuthAgent(String phone, String wxid, Integer isHeader, String password) {
 
         if (!StringUtils.hasText(phone)) {
             return new ResultModel(false, "请填写手机号");
@@ -139,9 +148,16 @@ public class MemberCenterServiceImpl implements MemberCenterService {
             return new ResultModel(false, "请填写微信号");
         }
 
-        if (isHead == null || (isHead != FinalData.Member.HEADER_AGENT && isHead != FinalData.Member.COMMON_AGENT)) {
+        if (isHeader == null || (isHeader != FinalData.Member.HEADER_AGENT && isHeader != FinalData.Member.COMMON_AGENT)) {
             return new ResultModel(false, "请填写正确的经纪人类型");
         }
+        
+        if (isHeader == FinalData.Member.HEADER_AGENT) { // 总部经纪人则校验密码
+			String headerPwd = gamerulesMapper.getHeaderPassword();
+			if (!headerPwd.equals(MD5Utils.MD5(password))) { // md5加密后比较
+				return new ResultModel(false, "总部经纪人密码错误");
+			}
+		}
         return null;
     }
 }

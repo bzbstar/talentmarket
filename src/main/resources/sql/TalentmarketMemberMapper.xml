@@ -35,7 +35,7 @@
     <result column="qrcode" property="qrcode" jdbcType="VARCHAR" />
     <result column="fans_num" property="fansNum" jdbcType="INTEGER" />
     <result column="totalredmoney" property="totalredmoney" jdbcType="BIGINT" />
-    <result column="iskf" property="iskf" jdbcType="TINYINT" />
+    <result column="isagent" property="isagent" jdbcType="TINYINT" />
     <result column="isheader" property="isheader" jdbcType="TINYINT" />
     <result column="subscribe_status" property="subscribeStatus" jdbcType="TINYINT" />
     <result column="red_status" property="redStatus" jdbcType="TINYINT" />
@@ -51,7 +51,7 @@
     id, uid, openid, nickname, realname, sex, age, idcardno, wxid, phone, qq, email,
     headimgurl, `yuyan`, country, province, city, counties, address, memberlevel, kfaccount,
     fopenid, unionid, remark, groupid, tagid_list, subscribe_scene, qr_scene, qr_scene_str, 
-    qrcode, fans_num, totalredmoney, isheader, iskf, subscribe_status, red_status, subscribedate,
+    qrcode, fans_num, totalredmoney, isheader, isagent, subscribe_status, red_status, subscribedate,
     `geoglatitude`, `geoglongitude`, `geogprecision`, credate, upddate
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
@@ -84,7 +84,7 @@
       unionid, remark, groupid, 
       tagid_list, subscribe_scene, qr_scene, 
       qr_scene_str, qrcode, fans_num, 
-      totalredmoney, iskf, isheader, subscribe_status,
+      totalredmoney, isagent, isheader, subscribe_status,
       red_status, subscribedate, geoglatitude, geoglongitude,
       geogprecision, credate, upddate)
     values (#{id,jdbcType=INTEGER}, #{uid,jdbcType=VARCHAR}, #{openid,jdbcType=VARCHAR}, 
@@ -97,7 +97,7 @@
       #{unionid,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR}, #{groupid,jdbcType=INTEGER},
       #{tagidList,jdbcType=VARCHAR}, #{subscribeScene,jdbcType=VARCHAR}, #{qrScene,jdbcType=INTEGER},
       #{qrSceneStr,jdbcType=VARCHAR}, #{qrcode,jdbcType=VARCHAR}, #{fansNum,jdbcType=INTEGER}, 
-      #{totalredmoney,jdbcType=BIGINT}, #{iskf,jdbcType=TINYINT}, #{isheader,jdbcType=TINYINT}, #{subscribeStatus,jdbcType=TINYINT},
+      #{totalredmoney,jdbcType=BIGINT}, #{isagent,jdbcType=TINYINT}, #{isheader,jdbcType=TINYINT}, #{subscribeStatus,jdbcType=TINYINT},
       #{redStatus,jdbcType=TINYINT}, #{subscribedate,jdbcType=BIGINT}, #{geoglatitude,jdbcType=DOUBLE},
       #{geoglatitude,jdbcType=DOUBLE}, #{geoglongitude,jdbcType=DOUBLE}, #{geogprecision,jdbcType=DOUBLE},
       #{credate,jdbcType=TIMESTAMP}, #{upddate,jdbcType=TIMESTAMP})
@@ -201,8 +201,8 @@
       <if test="totalredmoney != null" >
         totalredmoney,
       </if>
-      <if test="iskf != null" >
-        iskf,
+      <if test="isagent != null" >
+        isagent,
       </if>
       <if test="isheader != null" >
         isheader,
@@ -329,8 +329,8 @@
       <if test="totalredmoney != null" >
         #{totalredmoney,jdbcType=BIGINT},
       </if>
-      <if test="iskf != null" >
-        #{iskf,jdbcType=TINYINT},
+      <if test="isagent != null" >
+        #{isagent,jdbcType=TINYINT},
       </if>
       <if test="isheader != null" >
         #{isheader,jdbcType=TINYINT},
@@ -457,8 +457,8 @@
       <if test="totalredmoney != null" >
         totalredmoney = #{totalredmoney,jdbcType=BIGINT},
       </if>
-      <if test="iskf != null" >
-        iskf = #{iskf,jdbcType=TINYINT},
+      <if test="isagent != null" >
+        isagent = #{isagent,jdbcType=TINYINT},
       </if>
       <if test="isheader != null" >
         isheader = #{isheader,jdbcType=TINYINT},
@@ -588,8 +588,8 @@
       <if test="totalredmoney != null" >
         totalredmoney = #{totalredmoney,jdbcType=BIGINT},
       </if>
-      <if test="iskf != null" >
-        iskf = #{iskf,jdbcType=TINYINT},
+      <if test="isagent != null" >
+        isagent = #{isagent,jdbcType=TINYINT},
       </if>
       <if test="isheader != null" >
         isheader = #{isheader,jdbcType=TINYINT},
@@ -655,7 +655,7 @@
       qrcode = #{qrcode,jdbcType=VARCHAR},
       fans_num = #{fansNum,jdbcType=INTEGER},
       totalredmoney = #{totalredmoney,jdbcType=BIGINT},
-      iskf = #{iskf,jdbcType=TINYINT},
+      isagent = #{isagent,jdbcType=TINYINT},
       isheader = #{isheader,jdbcType=TINYINT},
       subscribe_status = #{subscribeStatus,jdbcType=TINYINT},
       red_status = #{redStatus,jdbcType=TINYINT},
