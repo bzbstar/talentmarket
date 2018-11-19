@@ -1,5 +1,6 @@
 package com.bzb.talentmarket.service;
 
+import com.bzb.talentmarket.bean.ResultModel;
 import com.bzb.talentmarket.entity.RedGrandrecords;
 import com.bzb.talentmarket.entity.TalentmarketMember;
 import com.github.pagehelper.PageInfo;
@@ -43,4 +44,13 @@ public interface MemberCenterService {
      * @return
      */
     PageInfo<TalentmarketMember> getRecommendMembers(String openid, Integer pageNo, Integer pageSize);
+
+    /**
+     * 授权成为总部经纪人
+     * @param phone 手机号
+     * @param wxid 微信号
+     * @param isHead 是否总部经纪人, 0 不是， 1是
+     * @return
+     */
+    ResultModel authToAgent(String openid, String phone, String wxid, Integer isHead);
 }

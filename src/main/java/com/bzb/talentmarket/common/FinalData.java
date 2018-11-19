@@ -53,5 +53,9 @@ public class FinalData {
 
         // 红包来源
         public static int REDMONEY_SOURCE_SCAN_RECOMMEND = 0; // 扫码推荐
+
+        // 是否总部经纪人
+        public static int HEADER_AGENT = 1; // 总部经纪人
+        public static int COMMON_AGENT = 0; // 普通经济人
     }
 }

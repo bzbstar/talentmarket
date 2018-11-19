@@ -1,5 +1,6 @@
 package com.bzb.talentmarket.controller;
 
+import com.bzb.talentmarket.bean.ResultModel;
 import com.bzb.talentmarket.entity.RedGrandrecords;
 import com.bzb.talentmarket.entity.TalentmarketMember;
 import com.bzb.talentmarket.service.MemberCenterService;
@@ -124,5 +125,16 @@ public class MemberCenterController {
     public PageInfo<TalentmarketMember> getRecommendMembers(String openid, Integer pageNo, Integer pageSize) {
         PageInfo<TalentmarketMember> members = memberCenterService.getRecommendMembers(openid, pageNo, pageSize);
         return members;
+    }
+
+    /**
+     * 授权成为经纪人
+     * @param phone 手机号
+     * @param wxid 微信号
+     * @param isHead 是否总部经纪人
+     * @return
+     */
+    public ResultModel authToAgent(String openid, String phone, String wxid, Integer isHead) {
+        return memberCenterService.authToAgent(openid, phone, wxid, isHead);
     }
 }

@@ -85,6 +85,8 @@ public class TalentmarketMember {
 
     private Date upddate;
 
+    private Integer isheader;
+
     public Integer getId() {
         return id;
     }
@@ -107,6 +109,14 @@ public class TalentmarketMember {
 
     public void setOpenid(String openid) {
         this.openid = openid == null ? null : openid.trim();
+    }
+
+    public Integer getIsheader() {
+        return isheader;
+    }
+
+    public void setIsheader(Integer isheader) {
+        this.isheader = isheader;
     }
 
     public String getNickname() {

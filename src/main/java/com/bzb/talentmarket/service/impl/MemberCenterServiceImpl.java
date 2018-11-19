@@ -1,5 +1,7 @@
 package com.bzb.talentmarket.service.impl;
 
+import com.bzb.talentmarket.bean.ResultModel;
+import com.bzb.talentmarket.common.FinalData;
 import com.bzb.talentmarket.entity.RedGrandrecords;
 import com.bzb.talentmarket.entity.TalentmarketMember;
 import com.bzb.talentmarket.exception.WxApiException;
@@ -97,5 +99,49 @@ public class MemberCenterServiceImpl implements MemberCenterService {
         PageInfo<TalentmarketMember> pageInfo = new PageInfo<>(recommendMembers);
 
         return pageInfo;
+    }
+
+    @Override
+    public ResultModel authToAgent(String openid, String phone, String wxid, Integer isHead) {
+        log.info("授权成为经纪人");
+
+        ResultModel resultModel = checkAuthAgent(phone, wxid, isHead);
+        if (resultModel != null) {
+            return resultModel;
+        }
+
+        // 根据openid更新经纪人状态
+        TalentmarketMember member = new TalentmarketMember();
+        member.setUpddate(new Date());
+        if (isHead == FinalData.Member.HEADER_AGENT) { // 总部经纪人
+
+        } else {
+
+        }
+
+        return null;
+    }
+
+    /**
+     * 授权成为经纪人,参数校验
+     * @param phone
+     * @param wxid
+     * @param isHead
+     * @return
+     */
+    private ResultModel checkAuthAgent(String phone, String wxid, Integer isHead) {
+
+        if (!StringUtils.hasText(phone)) {
+            return new ResultModel(false, "请填写手机号");
+        }
+
+        if (!StringUtils.hasText(wxid)) {
+            return new ResultModel(false, "请填写微信号");
+        }
+
+        if (isHead == null || (isHead != FinalData.Member.HEADER_AGENT && isHead != FinalData.Member.COMMON_AGENT)) {
+            return new ResultModel(false, "请填写正确的经纪人类型");
+        }
+        return null;
     }
 }

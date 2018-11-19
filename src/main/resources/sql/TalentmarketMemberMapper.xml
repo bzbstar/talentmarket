@@ -36,6 +36,7 @@
     <result column="fans_num" property="fansNum" jdbcType="INTEGER" />
     <result column="totalredmoney" property="totalredmoney" jdbcType="BIGINT" />
     <result column="iskf" property="iskf" jdbcType="TINYINT" />
+    <result column="isheader" property="isheader" jdbcType="TINYINT" />
     <result column="subscribe_status" property="subscribeStatus" jdbcType="TINYINT" />
     <result column="red_status" property="redStatus" jdbcType="TINYINT" />
     <result column="subscribedate" property="subscribedate" jdbcType="BIGINT" />
@@ -50,7 +51,7 @@
     id, uid, openid, nickname, realname, sex, age, idcardno, wxid, phone, qq, email,
     headimgurl, `yuyan`, country, province, city, counties, address, memberlevel, kfaccount,
     fopenid, unionid, remark, groupid, tagid_list, subscribe_scene, qr_scene, qr_scene_str, 
-    qrcode, fans_num, totalredmoney, iskf, subscribe_status, red_status, subscribedate,
+    qrcode, fans_num, totalredmoney, isheader, iskf, subscribe_status, red_status, subscribedate,
     `geoglatitude`, `geoglongitude`, `geogprecision`, credate, upddate
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
@@ -83,7 +84,7 @@
       unionid, remark, groupid, 
       tagid_list, subscribe_scene, qr_scene, 
       qr_scene_str, qrcode, fans_num, 
-      totalredmoney, iskf, subscribe_status, 
+      totalredmoney, iskf, isheader, subscribe_status,
       red_status, subscribedate, geoglatitude, geoglongitude,
       geogprecision, credate, upddate)
     values (#{id,jdbcType=INTEGER}, #{uid,jdbcType=VARCHAR}, #{openid,jdbcType=VARCHAR}, 
@@ -96,7 +97,7 @@
       #{unionid,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR}, #{groupid,jdbcType=INTEGER},
       #{tagidList,jdbcType=VARCHAR}, #{subscribeScene,jdbcType=VARCHAR}, #{qrScene,jdbcType=INTEGER},
       #{qrSceneStr,jdbcType=VARCHAR}, #{qrcode,jdbcType=VARCHAR}, #{fansNum,jdbcType=INTEGER}, 
-      #{totalredmoney,jdbcType=BIGINT}, #{iskf,jdbcType=TINYINT}, #{subscribeStatus,jdbcType=TINYINT}, 
+      #{totalredmoney,jdbcType=BIGINT}, #{iskf,jdbcType=TINYINT}, #{isheader,jdbcType=TINYINT}, #{subscribeStatus,jdbcType=TINYINT},
       #{redStatus,jdbcType=TINYINT}, #{subscribedate,jdbcType=BIGINT}, #{geoglatitude,jdbcType=DOUBLE},
       #{geoglatitude,jdbcType=DOUBLE}, #{geoglongitude,jdbcType=DOUBLE}, #{geogprecision,jdbcType=DOUBLE},
       #{credate,jdbcType=TIMESTAMP}, #{upddate,jdbcType=TIMESTAMP})
@@ -202,6 +203,9 @@
       </if>
       <if test="iskf != null" >
         iskf,
+      </if>
+      <if test="isheader != null" >
+        isheader,
       </if>
       <if test="subscribeStatus != null" >
         subscribe_status,
@@ -328,6 +332,9 @@
       <if test="iskf != null" >
         #{iskf,jdbcType=TINYINT},
       </if>
+      <if test="isheader != null" >
+        #{isheader,jdbcType=TINYINT},
+      </if>
       <if test="subscribeStatus != null" >
         #{subscribeStatus,jdbcType=TINYINT},
       </if>
@@ -452,6 +459,9 @@
       </if>
       <if test="iskf != null" >
         iskf = #{iskf,jdbcType=TINYINT},
+      </if>
+      <if test="isheader != null" >
+        isheader = #{isheader,jdbcType=TINYINT},
       </if>
       <if test="subscribeStatus != null" >
         subscribe_status = #{subscribeStatus,jdbcType=TINYINT},
@@ -581,6 +591,9 @@
       <if test="iskf != null" >
         iskf = #{iskf,jdbcType=TINYINT},
       </if>
+      <if test="isheader != null" >
+        isheader = #{isheader,jdbcType=TINYINT},
+      </if>
       <if test="subscribeStatus != null" >
         subscribe_status = #{subscribeStatus,jdbcType=TINYINT},
       </if>
@@ -643,6 +656,7 @@
       fans_num = #{fansNum,jdbcType=INTEGER},
       totalredmoney = #{totalredmoney,jdbcType=BIGINT},
       iskf = #{iskf,jdbcType=TINYINT},
+      isheader = #{isheader,jdbcType=TINYINT},
       subscribe_status = #{subscribeStatus,jdbcType=TINYINT},
       red_status = #{redStatus,jdbcType=TINYINT},
       subscribedate = #{subscribedate,jdbcType=BIGINT},
