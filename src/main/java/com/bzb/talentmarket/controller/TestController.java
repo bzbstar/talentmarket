@@ -53,8 +53,8 @@ public class TestController {
         long money = 100;
         String desc = "扫码推荐";
         String ip = request.getLocalAddr();
-       wxService.grantCashbonus(openid, money, ip); 
-        return "mobile/memberCenter";
+//       wxService.grantCashbonus(openid, money, ip);
+        return "mobile/authAgent";
     }
     
 }
