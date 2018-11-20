@@ -41,7 +41,7 @@ public class TalentmarketMember {
 
     private Byte memberlevel;
 
-    private String kfaccount;
+    private String agentopenid;
 
     private String fopenid;
 
@@ -405,11 +405,11 @@ public class TalentmarketMember {
         this.wxid = wxid;
     }
 
-	public String getKfaccount() {
-		return kfaccount;
-	}
+    public String getAgentopenid() {
+        return agentopenid;
+    }
 
-	public void setKfaccount(String kfaccount) {
-		this.kfaccount = kfaccount;
-	}
+    public void setAgentopenid(String agentopenid) {
+        this.agentopenid = agentopenid;
+    }
 }

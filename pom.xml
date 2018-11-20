@@ -130,6 +130,10 @@
 	</dependencies>
 
 	<build>
+
+		<!--指定package生成的文件名为talentmarket.jar-->
+		<finalName>talentmarket</finalName>
+
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
@@ -137,7 +141,7 @@
 			</plugin>
 
 			<!--Mybatis Generator -->
-			<plugin>
+			<!--<plugin>
 				<groupId>org.mybatis.generator</groupId>
 				<artifactId>mybatis-generator-maven-plugin</artifactId>
 				<version>1.3.2</version>
@@ -161,7 +165,7 @@
 						<version>1.3.2</version>
 					</dependency>
 				</dependencies>
-			</plugin>
+			</plugin>-->
 		</plugins>
 		<pluginManagement>
 			<plugins>

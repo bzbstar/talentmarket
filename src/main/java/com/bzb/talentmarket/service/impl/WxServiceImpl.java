@@ -74,9 +74,6 @@ public class WxServiceImpl implements WxService {
 	private TalentmarketEmployeeMapper employeeMapper;
 	
 	@Autowired
-	private TalentmarketKfMapper KfMapper;
-
-	@Autowired
 	private RedGrandrecordsMapper redMapper;
 
 	@Override
@@ -228,7 +225,7 @@ public class WxServiceImpl implements WxService {
 		
 		TextMessage textMessage = new TextMessage();
 		textMessage.setFromUserName(wxProperties.getWxid());
-		textMessage.setToUserName(member.getKfaccount());
+		textMessage.setToUserName(member.getAgentopenid());
 		textMessage.setMsgType("text");
 		textMessage.setCreateTime(new Date().getTime());
 		textMessage.setContent(content);
@@ -257,7 +254,7 @@ public class WxServiceImpl implements WxService {
 		kfMessage.setFromUserName(wxProperties.getWxid());
 		kfMessage.setCreateTime(CommonUtils.getTimestamp());
 		kfMessage.setMsgType(FinalData.Wx.MSGTYPE_TRANSFER_CUSTOMER_SERVICE);
-		kfMessage.setTransInfo(new TransInfo(member.getKfaccount()));
+		kfMessage.setTransInfo(new TransInfo(member.getAgentopenid()));
 		
 		String returnMessage = XmlUtils.toXML(kfMessage);
 		log.info("回复的客服消息，returnMsg={}", returnMessage);
@@ -317,24 +314,24 @@ public class WxServiceImpl implements WxService {
 	/**
 	 * 推送经济人消息
 	 * @param openid 粉丝openid
-	 * @param agentId 经纪人id
+	 * @param agentopenid 经纪人openid
 	 */
-	private void sendAgentMessage(String openid, String kfAccount) {
+	private void sendAgentMessage(String openid, String agentopenid) {
 		log.info("推送经纪人消息");
 
-		// 根据客服账号获取客服信息
-		TalentmarketKf kf = KfMapper.getByKfAccount(kfAccount);
-		if (kf == null) {
+		// 根据经纪人openid获取经纪人信息
+		TalentmarketMember agent = memberMapper.getByOpenid(agentopenid);
+		if (agent == null) {
 			log.error("经纪人不存在，this is a bug");
 			throw new WxApiException("经纪人不存在，this is a bug");
 		}
 
-		String phone = kf.getPhone();
-		String wxid = kf.getKfWx();
+		String phone = agent.getPhone();
+		String wxid = agent.getWxid();
 
 		StringBuilder content = new StringBuilder();
 		content.append("感谢您关注\"华山路人才市场公众号\"\n\n")
-				.append("我是您的经纪人：").append(kf.getKfNick());
+				.append("我是您的经纪人：").append(agent.getNickname());
 		if (phone.equals(wxid)) {
 			content.append("电话/微信：" + phone).append("\n");
 		} else {
@@ -350,10 +347,10 @@ public class WxServiceImpl implements WxService {
 	 * 发放随机红包
 	 * @param openid 粉丝的openid
 	 * @param presenterOpenid 推荐人的openid
-	 * @param kfAccount 客服账号
+	 * @param agentopenid 经纪人openid
 	 * @param maxred 随机红包最大值
 	 */
-	private void grandRandRed(String openid, String presenterOpenid, String kfAccount, int maxred) {
+	private void grandRandRed(String openid, String presenterOpenid, String agentopenid, int maxred) {
 		log.info("发放随机红包");
 
 		// 计算随机红包金额
@@ -374,7 +371,7 @@ public class WxServiceImpl implements WxService {
 		TalentmarketMember fans = new TalentmarketMember();
 		fans.setOpenid(openid);
 		fans.setFopenid(presenterOpenid); // 推荐人
-		fans.setKfaccount(kfAccount); // 经纪人id
+		fans.setAgentopenid(agentopenid); // 经纪人id
 		fans.setRedStatus((byte) FinalData.Member.REDSTATUS_DRAWED);
 		fans.setUpddate(new Date());
 		memberMapper.insertSelective(fans);

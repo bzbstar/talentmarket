@@ -23,7 +23,7 @@
     <result column="counties" property="counties" jdbcType="VARCHAR" />
     <result column="address" property="address" jdbcType="VARCHAR" />
     <result column="memberlevel" property="memberlevel" jdbcType="TINYINT" />
-    <result column="kfaccount" property="kfaccount" jdbcType="VARCHAR" />
+    <result column="agentopenid" property="agentopenid" jdbcType="VARCHAR" />
     <result column="fopenid" property="fopenid" jdbcType="VARCHAR" />
     <result column="unionid" property="unionid" jdbcType="VARCHAR" />
     <result column="remark" property="remark" jdbcType="VARCHAR" />
@@ -49,7 +49,7 @@
   </resultMap>
   <sql id="Base_Column_List" >
     id, uid, openid, nickname, realname, sex, age, idcardno, wxid, phone, qq, email,
-    headimgurl, `yuyan`, country, province, city, counties, address, memberlevel, kfaccount,
+    headimgurl, `yuyan`, country, province, city, counties, address, memberlevel, agentopenid,
     fopenid, unionid, remark, groupid, tagid_list, subscribe_scene, qr_scene, qr_scene_str, 
     qrcode, fans_num, totalredmoney, isheader, isagent, subscribe_status, red_status, subscribedate,
     `geoglatitude`, `geoglongitude`, `geogprecision`, credate, upddate
@@ -80,7 +80,7 @@
       phone, qq, email, headimgurl, 
       yuyan, country, province,
       city, counties, address, 
-      memberlevel, kfaccount, fopenid,
+      memberlevel, agentopenid, fopenid,
       unionid, remark, groupid, 
       tagid_list, subscribe_scene, qr_scene, 
       qr_scene_str, qrcode, fans_num, 
@@ -93,7 +93,7 @@
       #{phone,jdbcType=VARCHAR}, #{qq,jdbcType=VARCHAR}, #{email,jdbcType=VARCHAR}, #{headimgurl,jdbcType=VARCHAR}, 
       #{yuyan,jdbcType=VARCHAR}, #{country,jdbcType=VARCHAR}, #{province,jdbcType=VARCHAR},
       #{city,jdbcType=VARCHAR}, #{counties,jdbcType=VARCHAR}, #{address,jdbcType=VARCHAR}, 
-      #{memberlevel,jdbcType=TINYINT}, #{kfaccount,jdbcType=VARCHAR}, #{fopenid,jdbcType=VARCHAR},
+      #{memberlevel,jdbcType=TINYINT}, #{agentopenid,jdbcType=VARCHAR}, #{fopenid,jdbcType=VARCHAR},
       #{unionid,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR}, #{groupid,jdbcType=INTEGER},
       #{tagidList,jdbcType=VARCHAR}, #{subscribeScene,jdbcType=VARCHAR}, #{qrScene,jdbcType=INTEGER},
       #{qrSceneStr,jdbcType=VARCHAR}, #{qrcode,jdbcType=VARCHAR}, #{fansNum,jdbcType=INTEGER}, 
@@ -165,8 +165,8 @@
       <if test="memberlevel != null" >
         memberlevel,
       </if>
-      <if test="kfaccount != null" >
-        kfaccount,
+      <if test="agentopenid != null" >
+        agentopenid,
       </if>
       <if test="fopenid != null" >
         fopenid,
@@ -293,8 +293,8 @@
       <if test="memberlevel != null" >
         #{memberlevel,jdbcType=TINYINT},
       </if>
-      <if test="kfaccount != null" >
-        #{kfaccount,jdbcType=VARCHAR},
+      <if test="agentopenid != null" >
+        #{agentopenid,jdbcType=VARCHAR},
       </if>
       <if test="fopenid != null" >
         #{fopenid,jdbcType=VARCHAR},
@@ -421,8 +421,8 @@
       <if test="memberlevel != null" >
         memberlevel = #{memberlevel,jdbcType=TINYINT},
       </if>
-      <if test="kfaccount != null" >
-        kfaccount = #{kfaccount,jdbcType=VARCHAR},
+      <if test="agentopenid != null" >
+        agentopenid = #{agentopenid,jdbcType=VARCHAR},
       </if>
       <if test="fopenid != null" >
         fopenid = #{fopenid,jdbcType=VARCHAR},
@@ -552,8 +552,8 @@
       <if test="memberlevel != null" >
         memberlevel = #{memberlevel,jdbcType=TINYINT},
       </if>
-      <if test="kfaccount != null" >
-        kfaccount = #{kfaccount,jdbcType=VARCHAR},
+      <if test="agentopenid != null" >
+        agentopenid = #{agentopenid,jdbcType=VARCHAR},
       </if>
       <if test="fopenid != null" >
         fopenid = #{fopenid,jdbcType=VARCHAR},
@@ -643,7 +643,7 @@
       counties = #{counties,jdbcType=VARCHAR},
       address = #{address,jdbcType=VARCHAR},
       memberlevel = #{memberlevel,jdbcType=TINYINT},
-      kfaccount = #{kfaccount,jdbcType=VARCHAR},
+      agentopenid = #{agentopenid,jdbcType=VARCHAR},
       fopenid = #{fopenid,jdbcType=VARCHAR},
       unionid = #{unionid,jdbcType=VARCHAR},
       remark = #{remark,jdbcType=VARCHAR},

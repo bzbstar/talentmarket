@@ -1,7 +1,9 @@
 package com.bzb.talentmarket.mapper;
 
 import com.bzb.talentmarket.entity.TalentmarketRecommendRecords;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public interface TalentmarketRecommendRecordsMapper {
     int deleteByPrimaryKey(Integer id);
 

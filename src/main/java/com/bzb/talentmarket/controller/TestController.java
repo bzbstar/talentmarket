@@ -1,7 +1,6 @@
 package com.bzb.talentmarket.controller;
 
 import com.bzb.talentmarket.entity.TalentmarketMember;
-import com.bzb.talentmarket.service.BaiduService;
 import com.bzb.talentmarket.service.TestService;
 import com.bzb.talentmarket.service.WxService;
 
@@ -29,9 +28,6 @@ public class TestController {
 
     @Autowired
     private TestService testService;
-
-    @Autowired
-    private BaiduService baiduService;
 
     @RequestMapping("/")
     public String test(String kfPre, String nickname, HttpServletRequest request) {

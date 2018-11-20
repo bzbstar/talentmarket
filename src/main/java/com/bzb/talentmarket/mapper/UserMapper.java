@@ -1,7 +1,9 @@
 package com.bzb.talentmarket.mapper;
 
 import com.bzb.talentmarket.entity.User;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public interface UserMapper {
     int deleteByPrimaryKey(Integer userId);
 

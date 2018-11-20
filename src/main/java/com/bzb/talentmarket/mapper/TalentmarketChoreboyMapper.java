@@ -1,7 +1,9 @@
 package com.bzb.talentmarket.mapper;
 
 import com.bzb.talentmarket.entity.TalentmarketChoreboy;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public interface TalentmarketChoreboyMapper {
     int deleteByPrimaryKey(Integer id);
 

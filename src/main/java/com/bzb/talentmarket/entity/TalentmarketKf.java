@@ -9,10 +9,11 @@ public class TalentmarketKf {
 
     private String kfAccount;
 
-    private String kfNick;
     private String phone;
 
-	private String kfId;
+    private String kfNick;
+
+    private String kfId;
 
     private String kfHeadimgurl;
 
@@ -26,7 +27,9 @@ public class TalentmarketKf {
 
     private String empuid;
 
-    private String openid;
+    private Byte isheaderkf;
+
+    private Byte kfStatus;
 
     private Date credate;
 
@@ -54,6 +57,14 @@ public class TalentmarketKf {
 
     public void setKfAccount(String kfAccount) {
         this.kfAccount = kfAccount == null ? null : kfAccount.trim();
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone == null ? null : phone.trim();
     }
 
     public String getKfNick() {
@@ -120,12 +131,20 @@ public class TalentmarketKf {
         this.empuid = empuid == null ? null : empuid.trim();
     }
 
-    public String getOpenid() {
-        return openid;
+    public Byte getIsheaderkf() {
+        return isheaderkf;
     }
 
-    public void setOpenid(String openid) {
-        this.openid = openid == null ? null : openid.trim();
+    public void setIsheaderkf(Byte isheaderkf) {
+        this.isheaderkf = isheaderkf;
+    }
+
+    public Byte getKfStatus() {
+        return kfStatus;
+    }
+
+    public void setKfStatus(Byte kfStatus) {
+        this.kfStatus = kfStatus;
     }
 
     public Date getCredate() {
@@ -143,12 +162,4 @@ public class TalentmarketKf {
     public void setUpddate(Date upddate) {
         this.upddate = upddate;
     }
-    public String getPhone() {
-		return phone;
-	}
-
-	public void setPhone(String phone) {
-		this.phone = phone;
-	}
-
 }

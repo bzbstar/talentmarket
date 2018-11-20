@@ -60,7 +60,7 @@ public class MemberCenterServiceImpl implements MemberCenterService {
         String qrcode = member.getQrcode();
 
         if (!StringUtils.hasText(qrcode)) { // 推荐二维码为空，生成永久二维码
-            qrcode = wxService.createQrcode("QR_LIMIT_SCENE", openid, member.getKfaccount());
+            qrcode = wxService.createQrcode("QR_LIMIT_SCENE", openid, member.getAgentopenid());
 
             // 转换为短链接
             qrcode = wxService.shorturl(qrcode);
@@ -135,7 +135,7 @@ public class MemberCenterServiceImpl implements MemberCenterService {
      * 授权成为经纪人,参数校验
      * @param phone
      * @param wxid
-     * @param isHead
+     * @param isHeader
      * @return
      */
     private ResultModel checkAuthAgent(String phone, String wxid, Integer isHeader, String password) {

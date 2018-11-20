@@ -1,9 +1,10 @@
 package com.bzb.talentmarket.mapper;
 
 import com.bzb.talentmarket.entity.TalentmarketFactory;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
-
+@Repository
 public interface TalentmarketFactoryMapper {
     int deleteByPrimaryKey(Integer id);
 

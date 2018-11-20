@@ -1,9 +1,10 @@
 package com.bzb.talentmarket.mapper;
 
 import com.bzb.talentmarket.entity.RedGrandrecords;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
-
+@Repository
 public interface RedGrandrecordsMapper {
     int deleteByPrimaryKey(Integer id);
 

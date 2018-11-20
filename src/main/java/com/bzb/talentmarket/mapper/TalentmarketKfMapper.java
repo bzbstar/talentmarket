@@ -1,7 +1,9 @@
 package com.bzb.talentmarket.mapper;
 
 import com.bzb.talentmarket.entity.TalentmarketKf;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public interface TalentmarketKfMapper {
     int deleteByPrimaryKey(Integer id);
 
@@ -14,6 +16,4 @@ public interface TalentmarketKfMapper {
     int updateByPrimaryKeySelective(TalentmarketKf record);
 
     int updateByPrimaryKey(TalentmarketKf record);
-
-	TalentmarketKf getByKfAccount(String kfAccount);
 }
