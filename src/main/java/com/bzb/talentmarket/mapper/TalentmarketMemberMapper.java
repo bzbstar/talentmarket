@@ -1,10 +1,11 @@
 package com.bzb.talentmarket.mapper;
 
 import com.bzb.talentmarket.entity.TalentmarketMember;
-import org.springframework.stereotype.Repository;
+import com.sun.org.glassfish.gmbal.ParameterNames;
 
 import java.util.List;
-@Repository
+
+import org.apache.ibatis.annotations.Param;
 public interface TalentmarketMemberMapper {
     int deleteByPrimaryKey(Integer id);
 
@@ -23,7 +24,7 @@ public interface TalentmarketMemberMapper {
      * @param openid
      * @return
      */
-    TalentmarketMember getByOpenid(String openid);
+    TalentmarketMember getByOpenid(@Param("openid") String openid);
 
     /**
      * 根据openid更新会员信息

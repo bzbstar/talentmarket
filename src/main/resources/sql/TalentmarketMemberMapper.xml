@@ -36,7 +36,6 @@
     <result column="fans_num" property="fansNum" jdbcType="INTEGER" />
     <result column="totalredmoney" property="totalredmoney" jdbcType="BIGINT" />
     <result column="isagent" property="isagent" jdbcType="TINYINT" />
-    <result column="isheader" property="isheader" jdbcType="TINYINT" />
     <result column="subscribe_status" property="subscribeStatus" jdbcType="TINYINT" />
     <result column="red_status" property="redStatus" jdbcType="TINYINT" />
     <result column="subscribedate" property="subscribedate" jdbcType="BIGINT" />
@@ -51,7 +50,7 @@
     id, uid, openid, nickname, realname, sex, age, idcardno, wxid, phone, qq, email,
     headimgurl, `yuyan`, country, province, city, counties, address, memberlevel, agentopenid,
     fopenid, unionid, remark, groupid, tagid_list, subscribe_scene, qr_scene, qr_scene_str, 
-    qrcode, fans_num, totalredmoney, isheader, isagent, subscribe_status, red_status, subscribedate,
+    qrcode, fans_num, totalredmoney, isagent, subscribe_status, red_status, subscribedate,
     `geoglatitude`, `geoglongitude`, `geogprecision`, credate, upddate
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
@@ -84,7 +83,7 @@
       unionid, remark, groupid, 
       tagid_list, subscribe_scene, qr_scene, 
       qr_scene_str, qrcode, fans_num, 
-      totalredmoney, isagent, isheader, subscribe_status,
+      totalredmoney, isagent, subscribe_status,
       red_status, subscribedate, geoglatitude, geoglongitude,
       geogprecision, credate, upddate)
     values (#{id,jdbcType=INTEGER}, #{uid,jdbcType=VARCHAR}, #{openid,jdbcType=VARCHAR}, 
@@ -97,7 +96,7 @@
       #{unionid,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR}, #{groupid,jdbcType=INTEGER},
       #{tagidList,jdbcType=VARCHAR}, #{subscribeScene,jdbcType=VARCHAR}, #{qrScene,jdbcType=INTEGER},
       #{qrSceneStr,jdbcType=VARCHAR}, #{qrcode,jdbcType=VARCHAR}, #{fansNum,jdbcType=INTEGER}, 
-      #{totalredmoney,jdbcType=BIGINT}, #{isagent,jdbcType=TINYINT}, #{isheader,jdbcType=TINYINT}, #{subscribeStatus,jdbcType=TINYINT},
+      #{totalredmoney,jdbcType=BIGINT}, #{isagent,jdbcType=TINYINT}, #{subscribeStatus,jdbcType=TINYINT},
       #{redStatus,jdbcType=TINYINT}, #{subscribedate,jdbcType=BIGINT}, #{geoglatitude,jdbcType=DOUBLE},
       #{geoglatitude,jdbcType=DOUBLE}, #{geoglongitude,jdbcType=DOUBLE}, #{geogprecision,jdbcType=DOUBLE},
       #{credate,jdbcType=TIMESTAMP}, #{upddate,jdbcType=TIMESTAMP})
@@ -203,9 +202,6 @@
       </if>
       <if test="isagent != null" >
         isagent,
-      </if>
-      <if test="isheader != null" >
-        isheader,
       </if>
       <if test="subscribeStatus != null" >
         subscribe_status,
@@ -332,9 +328,6 @@
       <if test="isagent != null" >
         #{isagent,jdbcType=TINYINT},
       </if>
-      <if test="isheader != null" >
-        #{isheader,jdbcType=TINYINT},
-      </if>
       <if test="subscribeStatus != null" >
         #{subscribeStatus,jdbcType=TINYINT},
       </if>
@@ -459,9 +452,6 @@
       </if>
       <if test="isagent != null" >
         isagent = #{isagent,jdbcType=TINYINT},
-      </if>
-      <if test="isheader != null" >
-        isheader = #{isheader,jdbcType=TINYINT},
       </if>
       <if test="subscribeStatus != null" >
         subscribe_status = #{subscribeStatus,jdbcType=TINYINT},
@@ -591,9 +581,6 @@
       <if test="isagent != null" >
         isagent = #{isagent,jdbcType=TINYINT},
       </if>
-      <if test="isheader != null" >
-        isheader = #{isheader,jdbcType=TINYINT},
-      </if>
       <if test="subscribeStatus != null" >
         subscribe_status = #{subscribeStatus,jdbcType=TINYINT},
       </if>
@@ -656,7 +643,6 @@
       fans_num = #{fansNum,jdbcType=INTEGER},
       totalredmoney = #{totalredmoney,jdbcType=BIGINT},
       isagent = #{isagent,jdbcType=TINYINT},
-      isheader = #{isheader,jdbcType=TINYINT},
       subscribe_status = #{subscribeStatus,jdbcType=TINYINT},
       red_status = #{redStatus,jdbcType=TINYINT},
       subscribedate = #{subscribedate,jdbcType=BIGINT},

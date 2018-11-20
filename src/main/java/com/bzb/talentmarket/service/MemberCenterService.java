@@ -52,5 +52,5 @@ public interface MemberCenterService {
      * @param isHead 是否总部经纪人, 0 不是， 1是
      * @return
      */
-    ResultModel authToAgent(String openid, String phone, String wxid, Integer isHeader, String password);
+    ResultModel authToAgent(String openid, String phone, String wxid, Boolean isHeader, String password);
 }

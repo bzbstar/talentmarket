@@ -128,13 +128,15 @@ public class MemberCenterController {
     }
 
     /**
-     * 授权成为经纪人
+               *     授权成为经纪人
      * @param phone 手机号
      * @param wxid 微信号
-     * @param isHead 是否总部经纪人
+     * @param isHeader 是否总部经纪人
      * @return
      */
-    public ResultModel authToAgent(String openid, String phone, String wxid, Integer isHead, String password) {
-        return memberCenterService.authToAgent(openid, phone, wxid, isHead, password);
+    @RequestMapping(value = "/authAgent", method = RequestMethod.PUT)
+    @ResponseBody
+    public ResultModel authToAgent(String openid, String phone, String wxid, Boolean isHeader, String password) {
+    	return memberCenterService.authToAgent(openid, phone, wxid, isHeader, password);
     }
 }

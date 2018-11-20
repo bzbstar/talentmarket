@@ -115,13 +115,7 @@
     where id = #{id,jdbcType=INTEGER}
   </update>
 
-  <select id="getDistinceAndRed" resultMap="BaseResultMap">
-    SELECT distance, maxred
-    FROM tb_talentmarket_gamerules
-    LIMIT 1
-  </select>
-  
-  <select id="getDistinceAndRed" resultMap="java.lang.String">
+  <select id="getDistinceAndRed" resultType="java.lang.String">
     SELECT header_password
     FROM tb_talentmarket_gamerules
     LIMIT 1
