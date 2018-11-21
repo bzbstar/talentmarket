@@ -412,4 +412,21 @@ public class TalentmarketMember {
     public void setAgentopenid(String agentopenid) {
         this.agentopenid = agentopenid;
     }
+
+	@Override
+	public String toString() {
+		return "TalentmarketMember [id=" + id + ", uid=" + uid + ", openid=" + openid + ", nickname=" + nickname
+				+ ", realname=" + realname + ", sex=" + sex + ", age=" + age + ", idcardno=" + idcardno + ", phone="
+				+ phone + ", qq=" + qq + ", email=" + email + ", headimgurl=" + headimgurl + ", yuyan=" + yuyan
+				+ ", country=" + country + ", province=" + province + ", city=" + city + ", counties=" + counties
+				+ ", address=" + address + ", memberlevel=" + memberlevel + ", agentopenid=" + agentopenid
+				+ ", fopenid=" + fopenid + ", unionid=" + unionid + ", remark=" + remark + ", groupid=" + groupid
+				+ ", tagidList=" + tagidList + ", subscribeScene=" + subscribeScene + ", qrScene=" + qrScene
+				+ ", qrSceneStr=" + qrSceneStr + ", qrcode=" + qrcode + ", fansNum=" + fansNum + ", totalredmoney="
+				+ totalredmoney + ", isagent=" + isagent + ", subscribeStatus=" + subscribeStatus + ", redStatus="
+				+ redStatus + ", subscribedate=" + subscribedate + ", geoglatitude=" + geoglatitude + ", geoglongitude="
+				+ geoglongitude + ", geogprecision=" + geogprecision + ", wxid=" + wxid + ", credate=" + credate
+				+ ", upddate=" + upddate + "]";
+	}
+    
 }

@@ -87,13 +87,14 @@ public class WxPushController {
 			log.error("获取微信事件推送xml转换Map异常");
 		}
 		
+		params.put("ip", request.getRemoteAddr());
+		
 		try (PrintWriter out = response.getWriter()) {
 			
 			// 直接回复SUCCESS，防止微信重复请求
+			out.println("success");
 			
-			String returnMessage = wxService.executeMessge(params);
-			
-			out.println(returnMessage);
+			wxService.executeMessge(params);
 			
 		} catch (IOException e) {
 			e.printStackTrace();

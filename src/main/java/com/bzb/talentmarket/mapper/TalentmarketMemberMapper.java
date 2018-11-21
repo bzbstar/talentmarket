@@ -47,4 +47,14 @@ public interface TalentmarketMemberMapper {
      * @return
      */
     List<TalentmarketMember> getRecommendMembersByOpenid(String openid);
+
+    /**
+     * 
+     * @Description:获取总部经纪人
+     * @return
+     * @exception:
+     * @author: bzb
+     * @time:2018年11月21日 下午9:33:07
+     */
+	TalentmarketMember getHeaderAgent();
 }

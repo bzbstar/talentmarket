@@ -7,8 +7,7 @@
     <div id="app" style="background-color: #fafafa;">
 
         <!--引入头像二维码片段-->
-        <div th:replace="mobile/common :: common_headimg('http://thirdwx.qlogo.cn/mmopen/DzfLC7vAweubs3BgcRTuuMkEfoHlTZkaTQw6M2hUxRDkVBl20vbelTGZ9XsreBq7k7dn7eK1zXiaRpWndboujXsibAkiaf2DERic/132', 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=gQHY8DwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyZURRaW9SRW9kMGwxMDAwMHcwN3AAAgStSOpbAwQAAAAA')"></div>
-
+        <div th:replace="mobile/common :: common_headimg(${member.headimgurl}, ${member.qrcode})"></div>
         <!--随机红包金额-->
         <van-row type="flex" justify="center" class="box hsl_center">
             <van-col span="24">

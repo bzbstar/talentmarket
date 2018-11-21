@@ -26,12 +26,13 @@ public interface WxService {
 	 * @param actionName 二维码类型，QR_SCENE为临时的整型参数值，QR_STR_SCENE为临时的字符串参数值，
 	 * QR_LIMIT_SCENE为永久的整型参数值，QR_LIMIT_STR_SCENE为永久的字符串参数值
 	 * @param openid 推荐者的openid
-	 * @param uid 经纪人的uid
+	 * @param agentOpenid 经纪人的openid
+	 * @param isagent
 	 * @return
 	 * @author: bzb
 	 * @time:2018年11月11日 下午8:43:08
 	 */
-	String createQrcode(String actionName, String openid, String uid);
+	String createQrcode(String actionName, String openid, String agentOpenid, Integer isagent);
 	
 	/**
 	 * 
@@ -42,7 +43,7 @@ public interface WxService {
 	 * @return String 回复给微信的消息
 	 * @time:2018年11月11日 下午10:01:34
 	 */
-	String executeMessge(Map<String, String> params);
+	void executeMessge(Map<String, String> params);
 
 	/**
 	 * 调用接口获取用户基本信息

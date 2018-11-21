@@ -669,4 +669,15 @@
     WHERE
       fopenid = #{openid,jdbcType=VARCHAR}
   </select>
+  
+  <!-- 获取总部经纪人 -->
+  <select id="getHeaderAgent" resultMap="BaseResultMap">
+  	SELECT 
+  		openid 
+  	FROM tb_talentmarket_member
+    WHERE
+      isagent = 2 
+      AND subscribe_status = 1 
+    LIMIT 1
+  </select>
 </mapper>
