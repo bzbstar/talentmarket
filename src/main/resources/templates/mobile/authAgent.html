@@ -131,7 +131,7 @@
                     
                     // 提交表单
                     var params = new URLSearchParams();
-					params.append('openid', '123');
+					params.append('openid', 'oqFhA1YfrunnhBasHmsdZ4KCLqok');
 					params.append('phone', vm.phone);
 					params.append('wxid', vm.wxid);
 					params.append('password', vm.password);
@@ -143,8 +143,13 @@
                     	let result = res.data;
                     	if (result.success) {
                     		this.$toast.success('授权成功');
+                    		// 清空表单
+                            vm.phone = '';
+                            vm.wxid = '';
+                            vm.password = '';
+                            vm.isHeader = false;
                     	} else {
-                    		this.$toast.fail('授权失败');
+                    		this.$toast.fail(result.message);
                     	}
                     }).catch((err) => {
                     	console.log(err);

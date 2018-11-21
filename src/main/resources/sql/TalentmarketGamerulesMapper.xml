@@ -115,7 +115,7 @@
     where id = #{id,jdbcType=INTEGER}
   </update>
 
-  <select id="getDistinceAndRed" resultType="java.lang.String">
+  <select id="getHeaderPassword" resultType="java.lang.String">
     SELECT header_password
     FROM tb_talentmarket_gamerules
     LIMIT 1

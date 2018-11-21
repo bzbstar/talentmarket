@@ -45,7 +45,8 @@ public class MemberCenterServiceImpl implements MemberCenterService {
 
     @Value("${membercenter_url}")
     private String memberCenterUrl;
-    
+
+    @Autowired
     private TalentmarketGamerulesMapper gamerulesMapper;
 
     @Override
@@ -111,7 +112,7 @@ public class MemberCenterServiceImpl implements MemberCenterService {
     		String password) {
         log.info("授权成为经纪人");
 
-        ResultModel resultModel = checkAuthAgent(phone, wxid, isHeader, password);
+        ResultModel resultModel = checkAuthAgent(openid, phone, wxid, isHeader, password);
         if (resultModel != null) {
             return resultModel;
         }
@@ -144,7 +145,16 @@ public class MemberCenterServiceImpl implements MemberCenterService {
      * @param isHeader
      * @return
      */
-    private ResultModel checkAuthAgent(String phone, String wxid, Boolean isHeader, String password) {
+    private ResultModel checkAuthAgent(String openid, String phone, String wxid, Boolean isHeader, String password) {
+        if (!StringUtils.hasText(openid)) {
+            return new ResultModel(false, "授权的openid不存在");
+        }
+
+        // 判断openid是否存在
+        TalentmarketMember agent = memberMapper.getByOpenid(openid);
+        if (agent == null) {
+            return new ResultModel(false, "授权的经纪人不存在");
+        }
 
         if (!StringUtils.hasText(phone)) {
             return new ResultModel(false, "请填写手机号");
@@ -160,7 +170,7 @@ public class MemberCenterServiceImpl implements MemberCenterService {
         
         if (isHeader) { // 总部经纪人则校验密码
 			String headerPwd = gamerulesMapper.getHeaderPassword();
-			if (!headerPwd.equals(MD5Utils.MD5(password))) { // md5加密后比较
+			if (!MD5Utils.MD5(password).equals(headerPwd)) { // md5加密后比较
 				return new ResultModel(false, "总部经纪人密码错误");
 			}
 		}
