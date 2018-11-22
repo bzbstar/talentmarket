@@ -115,8 +115,20 @@
     where id = #{id,jdbcType=INTEGER}
   </update>
 
+  <select id="getDistinceAndRed" resultMap="BaseResultMap">
+    SELECT maxred, distance
+    FROM tb_talentmarket_gamerules
+    LIMIT 1
+  </select>
+
   <select id="getHeaderPassword" resultType="java.lang.String">
     SELECT header_password
+    FROM tb_talentmarket_gamerules
+    LIMIT 1
+  </select>
+
+  <select id="getRandredRule" resultType="java.lang.String">
+    SELECT randred_rule
     FROM tb_talentmarket_gamerules
     LIMIT 1
   </select>

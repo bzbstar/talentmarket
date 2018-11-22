@@ -657,7 +657,7 @@
   <!--更新推荐者的相关粉丝信息-->
   <update id="updateFans">
     UPDATE tb_talentmarket_member
-    SET fans_num = fans_num + 1, totalredmoney = totalredmoney + ${randMoney,jdbcType=BIGINT}, upddate = NOW()
+    SET fans_num = fans_num + 1, totalredmoney = totalredmoney + ${randMoney}, upddate = NOW()
     WHERE openid = #{openid,jdbcType=VARCHAR}
   </update>
   

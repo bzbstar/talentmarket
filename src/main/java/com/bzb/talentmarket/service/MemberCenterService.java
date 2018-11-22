@@ -2,6 +2,7 @@ package com.bzb.talentmarket.service;
 
 import com.bzb.talentmarket.bean.ResultModel;
 import com.bzb.talentmarket.entity.RedGrandrecords;
+import com.bzb.talentmarket.entity.TalentmarketGamerules;
 import com.bzb.talentmarket.entity.TalentmarketMember;
 import com.github.pagehelper.PageInfo;
 
@@ -49,8 +50,21 @@ public interface MemberCenterService {
      * 授权成为总部经纪人
      * @param phone 手机号
      * @param wxid 微信号
-     * @param isHead 是否总部经纪人, 0 不是， 1是
+     * @param isHeader 是否总部经纪人, 0 不是， 1是
      * @return
      */
     ResultModel authToAgent(String openid, String phone, String wxid, Boolean isHeader, String password);
+
+    /**
+     * 根据openid获取用户信息
+     * @param openid
+     * @return
+     */
+    TalentmarketMember getByOpenid(String openid);
+
+    /**
+     * 获取扫码推荐活动配置
+     * @return
+     */
+    String getGamerules();
 }

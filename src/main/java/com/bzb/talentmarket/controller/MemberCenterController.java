@@ -2,6 +2,7 @@ package com.bzb.talentmarket.controller;
 
 import com.bzb.talentmarket.bean.ResultModel;
 import com.bzb.talentmarket.entity.RedGrandrecords;
+import com.bzb.talentmarket.entity.TalentmarketGamerules;
 import com.bzb.talentmarket.entity.TalentmarketMember;
 import com.bzb.talentmarket.service.MemberCenterService;
 import com.bzb.talentmarket.service.WxService;
@@ -56,8 +57,38 @@ public class MemberCenterController {
         // 会员信息
         model.addAttribute("member", member);
 
+        // 活动规则
+        String randredRule = memberCenterService.getGamerules();
+        model.addAttribute("randredRule", randredRule);
+
         return "mobile/memberCenter";
     }
+
+
+    /**
+     * 前往经纪人授权页面, 注意这里是通过微信授权过来的
+     * @param code 微信网页授权code
+     * @param  state 微信网页授权重定向后会带上state参数，开发者可以填写a-zA-Z0-9的参数值，最多128字节
+     * @return
+     */
+    @RequestMapping(value = "/toAuthAgent", method = RequestMethod.GET)
+    public String toAuthAgent(Model model, String code, String state) {
+
+        // 通过code获取用户的openid
+        Map<String, Object> accessTokenMap = wxService.getAccessTokenByCode(code);
+
+        String openid = CommonUtils.objToStr(accessTokenMap.get("openid"));
+
+        // 根据openid获取会员信息，并判断是否生成永久的二维码
+        TalentmarketMember member = memberCenterService.getByOpenid(openid);
+
+        // 会员信息
+        model.addAttribute("member", member);
+
+        return "mobile/authAgent";
+    }
+
+
 
     /**
      * 采用静默授权去会员中心页

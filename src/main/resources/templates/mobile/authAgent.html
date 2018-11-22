@@ -7,8 +7,8 @@
 
     <div id="app" style="background-color: #fafafa;">
 
-        <van-nav-bar title="白志斌请授权">
-            <img src="http://thirdwx.qlogo.cn/mmopen/DzfLC7vAweubs3BgcRTuuMkEfoHlTZkaTQw6M2hUxRDkVBl20vbelTGZ9XsreBq7k7dn7eK1zXiaRpWndboujXsibAkiaf2DERic/132"
+        <van-nav-bar th:title="${member.nickname + '请授权'}">
+            <img th:src="${member.headimgurl}"
                  width="26px;" style="border-radius:50%;" slot="left"/>
 
         </van-nav-bar>
@@ -131,7 +131,7 @@
                     
                     // 提交表单
                     var params = new URLSearchParams();
-					params.append('openid', 'oqFhA1YfrunnhBasHmsdZ4KCLqok');
+					params.append('openid', [[${member.openid}]]);
 					params.append('phone', vm.phone);
 					params.append('wxid', vm.wxid);
 					params.append('password', vm.password);

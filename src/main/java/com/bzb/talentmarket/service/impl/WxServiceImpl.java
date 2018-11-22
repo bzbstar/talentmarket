@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 
@@ -108,16 +109,15 @@ public class WxServiceImpl implements WxService {
 	}
 
 	@Override
-	public String createQrcode(String actionName, String openid, String agentOpenid, Integer isagent) {
+	public String createQrcode(String actionName, String openid) {
 		
 		// 获取AccessToken
 		String accessToken = getAccessToken();
 		
 		// 场景字符串
 		Map<String, Object> scene_str = new HashMap<>();
-//		scene_str.put("scene_str", openid + "-" + agentOpenid + "-" + isagent);
-		scene_str.put("scene_str", "123-123-123" );
-		
+		scene_str.put("scene_str", openid);
+
 		// 场景值
 		Map<String, Object> scene = new HashMap<>();
 		scene.put("scene", scene_str);
@@ -267,45 +267,31 @@ public class WxServiceImpl implements WxService {
 	}
 
 	
-	public QrcodeScene getQrcodeScene(String scene, String eventType) {
+	public String getQrcodeScene(String scene, String eventType) {
 		// 获取扫码场景值
 		if (FinalData.Wx.EVENT_SUBSCIBE.equals(eventType)) { // 未关注扫码，场景值带qrscene_前缀
-			scene.replaceAll("qrscene_", "");
+			scene = scene.replaceAll("qrscene_", "");
 		}
-
-		String[] sceneArr = scene.split("-");
-		
-		int length = sceneArr.length;
-		if (sceneArr == null || length != 3) {
-			log.error("this is a bug, 关注二维码场景值缺失，参数个数={}", length);
-		}
-		
-		QrcodeScene qrcodeScene = new QrcodeScene();
-		qrcodeScene.setRefereeOpenid(sceneArr[0]);
-		qrcodeScene.setAgentOpenid(sceneArr[1]);
-		qrcodeScene.setIsAgent(Integer.parseInt(sceneArr[2]));
-		
-		log.info("二维码场景值scene={}", qrcodeScene);
-		
-		return qrcodeScene;
+		log.info("scene={}", scene);
+		return scene;
 	}
 	
 	/**
 	 * 扫描事件处理
 	 * @param openid 粉丝openid
 	 * @param eventType 事件类型，未关注扫描和关注扫描
-	 * @param scene 扫描场景值，格式为_123123
-	 * @param ip地址
+	 * @param scene 扫描场景值，格式为openid
+	 * @param ip
 	 */
 	private void scanQrcode(String openid, String eventType, String scene, String ip) {
-		
+
 		// 扫码场景值
-		QrcodeScene qrcodeScene = getQrcodeScene(scene, eventType);
-		
-		// 普通粉丝，推送经纪人消息
-		Integer isagent = qrcodeScene.getIsAgent();
-		if (isagent == 0) { 
-			sendAgentMessage(openid, qrcodeScene.getAgentOpenid());
+		String refereeOpenid = getQrcodeScene(scene, eventType);
+
+		// 推荐人为自己，直接返回
+		if (openid.equals(refereeOpenid)) {
+			log.info("推荐人为自己，直接返回");
+			return;
 		}
 
 		// 获取当前粉丝信息
@@ -315,10 +301,23 @@ public class WxServiceImpl implements WxService {
 			throw new WxApiException("粉丝不存在，不可能，关注的时候就存上了，这是一个bug");
 		}
 
+		if (FinalData.Member.ISAGENT_FAN != member.getIsagent()) { // 粉丝为经纪人，直接返回
+			log.info("贡献的粉丝为经纪人，无效粉丝");
+			return;
+		}
+
 		// 判断是否已领取，同一个人只能领取一次红包
 		if (FinalData.Member.REDSTATUS_DRAWED == member.getRedStatus()) { // 已领取
 			log.info("粉丝openid={}已领取过红包了", openid);
 			return;
+		}
+
+		// 获取经纪人信息
+		TalentmarketMember agent = getAgentByRefereeOpenid(refereeOpenid);
+
+		// 普通粉丝，推送经纪人消息
+		if (agent != null) {
+			sendAgentMessage(openid, agent);
 		}
 
 		// 半径映射范围
@@ -329,31 +328,64 @@ public class WxServiceImpl implements WxService {
 			return;
 		}
 
-		// 通过则调用Api进行微信转账
-		grandRandRed(openid, qrcodeScene.getRefereeOpenid(), qrcodeScene.getAgentOpenid(), gamerules.getMaxred(), isagent, ip);
+		// 给推荐者发送现金红包，经纪人不发送
+		grandCashRed(openid, refereeOpenid, gamerules.getMaxred(), agent == null ? "" : agent.getOpenid(), ip);
+
+	}
+
+	/**
+	 * 根据推荐者获取经纪人信息
+	 * @param refereeOpenid 推荐者的openid
+	 * @return
+	 */
+	private TalentmarketMember getAgentByRefereeOpenid(String refereeOpenid) {
+
+		// 推荐者信息
+		TalentmarketMember referee = memberMapper.getByOpenid(refereeOpenid);
+
+		String agentOpenid = null; // 经纪人编号
+		if (FinalData.Member.ISAGENT_FAN == referee.getIsagent()) { // 普通粉丝
+			agentOpenid = referee.getAgentopenid();
+			if (StringUtils.hasText(agentOpenid)) { // 经纪人为空不是总部经纪人不存在，请尽快绑定
+				return memberMapper.getByOpenid(agentOpenid);
+			}
+		} else { // 经纪人
+			return  referee;
+		}
+		return null;
+	}
+
+	/**
+	 * 更新粉丝状态为已领取
+	 * @param openid 粉丝openid
+	 * @param refereeOpenid 推荐人的openid
+	 */
+	private void updateFansRedstatus(String openid, String refereeOpenid, String agentOpenid) {
+		log.info("更新粉丝领取状态");
+		TalentmarketMember fans = new TalentmarketMember();
+		fans.setOpenid(openid);
+		fans.setFopenid(refereeOpenid); // 推荐人
+		fans.setAgentopenid(agentOpenid); // 经纪人id
+		fans.setRedStatus((byte) FinalData.Member.REDSTATUS_DRAWED);
+		fans.setUpddate(new Date());
+		memberMapper.updateByOpenid(fans);
 	}
 
 	/**
 	 * 推送经济人消息
 	 * @param openid 粉丝openid
-	 * @param agentopenid 经纪人openid
+	 * @param agent 经纪人
 	 */
-	private void sendAgentMessage(String openid, String agentOpenid) {
+	private void sendAgentMessage(String openid, TalentmarketMember agent) {
 		log.info("推送经纪人消息");
-
-		// 根据经纪人openid获取经纪人信息
-		TalentmarketMember agent = memberMapper.getByOpenid(agentOpenid);
-		if (agent == null) {
-			log.error("经纪人不存在，this is a bug");
-			throw new WxApiException("经纪人不存在，this is a bug");
-		}
 
 		String phone = agent.getPhone();
 		String wxid = agent.getWxid();
 
 		StringBuilder content = new StringBuilder();
-		content.append("感谢您关注\"华山路人才市场公众号\"\n\n")
-				.append("我是您的专属经纪人：").append(agent.getNickname());
+		content.append("感谢您关注\"华山路人才市场\"\n\n")
+				.append("我是您的专属经纪人：").append(agent.getNickname())
+		.append("\n");
 		if (phone.equals(wxid)) {
 			content.append("电话/微信：" + phone).append("\n");
 		} else {
@@ -366,46 +398,41 @@ public class WxServiceImpl implements WxService {
 
 
 	/**
-	 * 发放随机红包
+	 * 给推荐者发放现金红包
 	 * @param openid 粉丝的openid
 	 * @param refereeOpenid 推荐人的openid
-	 * @param agentOpenid 经纪人openid
 	 * @param maxred 随机红包最大值
-	 * @param ip地址， 现金红包接口需要用到
+	 * @param agentOpenid 经纪人的openid
+	 * @param ip ip地址，现金红包接口需要用到
 	 */
-	private void grandRandRed(String openid, String refereeOpenid, String agentOpenid, int maxred, Integer isagent, String ip) {
-		log.info("发放随机红包");
+	@Transactional
+	public void grandCashRed(String openid, String refereeOpenid, int maxred, String agentOpenid, String ip) {
+		log.info("发放现金红包");
 
-		// 更新粉丝状态为已领取, 并更新经纪人
-		TalentmarketMember fans = new TalentmarketMember();
-		fans.setOpenid(openid);
-		fans.setFopenid(refereeOpenid); // 推荐人
-		fans.setAgentopenid(agentOpenid); // 经纪人id
-		fans.setRedStatus((byte) FinalData.Member.REDSTATUS_DRAWED);
-		fans.setUpddate(new Date());
-		memberMapper.updateByOpenid(fans);
-		
-		
-		// 计算随机红包金额
+		// 更新粉丝为已领取
+		updateFansRedstatus(openid, refereeOpenid, agentOpenid);
+
+		// 计算现金红包金额
 		double randMoney = CommonUtils.randomDigits(maxred);
+		long redMoney = (long) randMoney * 100; // 转换为分
 
-		// 随机红包金额，单位分
-		long redMoney = (long) randMoney * 100;
-
-		// 推荐人的粉丝数+1，红包累计金额+randMoney
-		memberMapper.updateFans(refereeOpenid, isagent == 0 ? redMoney : 0);
-		
-		if (isagent != 0) { // 经纪人不发送消息
-			return;
-		}
-		
-		// TODO, 是否修改推荐人会员等级
-
-		// 插入领取红包记录
-
-		// 获取推荐人信息
+		// 推荐者信息
 		TalentmarketMember referee = memberMapper.getByOpenid(refereeOpenid);
 
+		// 是否经纪人
+		Integer isagent = (int) referee.getIsagent();
+		boolean isfans = isagent == FinalData.Member.ISAGENT_FAN; // 是否普通粉丝
+
+		// 更新推荐人的统计相关信息
+		memberMapper.updateFans(refereeOpenid, isfans ? redMoney : 0);
+
+		if (!isfans) { // 普通粉丝才发送红包
+			return;
+		}
+		// 调用微信转账接口发送现金红包
+		grantCashbonus(refereeOpenid, redMoney, ip);
+
+		// 插入领取红包记录
 		RedGrandrecords red = new RedGrandrecords();
 		red.setUid(UniqueIdUtils.getUUID());
 		red.setDraweruid(referee.getOpenid());
@@ -418,17 +445,13 @@ public class WxServiceImpl implements WxService {
 		red.setUpddate(now);
 		redMapper.insertSelective(red);
 
-		// 给推荐这发送红包消息
+		// 给推荐者发送红包消息
 		StringBuilder content = new StringBuilder();
 		content.append("感谢你对\"华山路人才市场\"的大力关注！\n\n")
 				.append("恭喜你获得红包：<span color='red'>").append(randMoney)
-		.append("</span>元\n\n")
-		.append("这是送您的一点点心意，请注意查收");
+				.append("</span>元\n\n")
+				.append("这是送您的一点点心意，请注意查收");
 		sendTextMessage(refereeOpenid, content.toString());
-		
-		// 调用微信转账接口发送随机红包
-		log.info("调用微信转账接口发送随机红包");
-		grantCashbonus(refereeOpenid, redMoney, ip);
 	}
 
 
@@ -449,6 +472,7 @@ public class WxServiceImpl implements WxService {
 		// 获取当前粉丝距离华山路人才市场的距离
 		double fansDistince = CommonUtils.getDistance(geoglatitude, geoglongitude, hslLatitude, hslLongitude);
 		if (fansDistince > distince) { // 超出映射范围
+			log.info("超出映射范围");
 			return false;
 		}
 

@@ -55,8 +55,8 @@ public class FinalData {
         public static int REDMONEY_SOURCE_SCAN_RECOMMEND = 0; // 扫码推荐
 
         // 是否总部经纪人
-        public static int HEADER_AGENT = 2; // 总部经纪人
-        public static int COMMON_AGENT = 1; // 普通经济人
-        public static int NO_AGENT = 0; // 普通粉丝
+        public static int ISAGENT_HEADER = 2; // 总部经纪人
+        public static int ISAGENT_AGENT = 1; // 普通经济人
+        public static int ISAGENT_FAN = 0; // 普通粉丝
     }
 }

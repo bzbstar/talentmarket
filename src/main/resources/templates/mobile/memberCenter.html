@@ -8,12 +8,13 @@
 
         <!--引入头像二维码片段-->
         <div th:replace="mobile/common :: common_headimg(${member.headimgurl}, ${member.qrcode})"></div>
+
         <!--随机红包金额-->
         <van-row type="flex" justify="center" class="box hsl_center">
             <van-col span="24">
                 <div style="height: 100%;" @click="getRedRecords()">
                     <div style="font-size: 12px;margin: 20px;">累积圈粉金额</div>
-                    <div style="font-size: 36px;color: #f44336;">5.55</div>
+                    <div style="font-size: 36px;color: #f44336;" th:text="${member.totalredmoney}"></div>
                 </div>
             </van-col>
         </van-row>
@@ -23,20 +24,15 @@
             <van-col span="24">
                 <div style="height: 100%;" @click="toRecommendMembers();">
                     <div style="font-size: 12px;margin: 20px;">贡献粉丝</div>
-                    <div style="font-size: 36px;">3</div>
+                    <div style="font-size: 36px;" th:text="${member.fansNum}">3</div>
                 </div>
             </van-col>
         </van-row>
 
         <!--活动规则-->
         <van-row type="flex" class="box" style="height: 200px;">
-            <van-col span="24" style="font-size: 12px;padding: 8px;">
-            	奖励规则：<br/>
-				1、如果您认可我们提供的服务，请分享您的二维码；<br/>
-				2、您贡献的每位粉丝，可能会获得0元-3元内的随机红包；<br/>
-				3、您贡献的每位粉丝，成功入职后，可能会获得100-1000元不等的佣金（具体介绍费的价目表请参照每个工厂/岗位的详情页)；<br/>
-				4、如有疑问，添加财务微信：VIPKF1232在线咨询；<br/>
-				5、我方可能会因为业务需要，调整相关规则，最终解释权归我方所有；<br/>
+            <van-col span="24" style="font-size: 12px;padding: 20px;" th:utext="${randredRule}">
+
             </van-col>
         </van-row>
         
@@ -65,12 +61,12 @@
 
                 // 随机红包记录列表
                 getRedRecords() {
-                    window.location.href = /*[[@{/memberCenter/toRedRecords(openid='oqFhA1YfrunnhBasHmsdZ4KCLqok',headimgurl='http://thirdwx.qlogo.cn/mmopen/DzfLC7vAweubs3BgcRTuuMkEfoHlTZkaTQw6M2hUxRDkVBl20vbelTGZ9XsreBq7k7dn7eK1zXiaRpWndboujXsibAkiaf2DERic/132',qrcode='https://w.url.cn/s/AZbx7Ag')}]]*/;
+                    window.location.href = /*[[@{/memberCenter/toRedRecords(openid=${member.openid},headimgurl=${member.headimgurl},qrcode=${member.qrcode})}]]*/;
                 },
 
                 // 推荐粉丝记录
                 toRecommendMembers() {
-                    window.location.href = /*[[@{/memberCenter/toRecommendMembers(openid='oqFhA1YfrunnhBasHmsdZ4KCLqok',headimgurl='http://thirdwx.qlogo.cn/mmopen/DzfLC7vAweubs3BgcRTuuMkEfoHlTZkaTQw6M2hUxRDkVBl20vbelTGZ9XsreBq7k7dn7eK1zXiaRpWndboujXsibAkiaf2DERic/132',qrcode='https://w.url.cn/s/AZbx7Ag')}]]*/;
+                    window.location.href = /*[[@{/memberCenter/toRecommendMembers(openid=${member.openid},headimgurl=${member.headimgurl},qrcode=${member.qrcode})}]]*/;
                 }
             }
         })

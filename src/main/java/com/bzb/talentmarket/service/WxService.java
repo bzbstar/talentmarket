@@ -32,7 +32,7 @@ public interface WxService {
 	 * @author: bzb
 	 * @time:2018年11月11日 下午8:43:08
 	 */
-	String createQrcode(String actionName, String openid, String agentOpenid, Integer isagent);
+	String createQrcode(String actionName, String openid);
 	
 	/**
 	 * 

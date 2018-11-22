@@ -3,6 +3,7 @@ package com.bzb.talentmarket.service.impl;
 import com.bzb.talentmarket.bean.ResultModel;
 import com.bzb.talentmarket.common.FinalData;
 import com.bzb.talentmarket.entity.RedGrandrecords;
+import com.bzb.talentmarket.entity.TalentmarketGamerules;
 import com.bzb.talentmarket.entity.TalentmarketMember;
 import com.bzb.talentmarket.exception.WxApiException;
 import com.bzb.talentmarket.mapper.RedGrandrecordsMapper;
@@ -61,12 +62,12 @@ public class MemberCenterServiceImpl implements MemberCenterService {
         String qrcode = member.getQrcode();
 
         if (!StringUtils.hasText(qrcode)) { // 推荐二维码为空，生成永久二维码
-            qrcode = wxService.createQrcode("QR_LIMIT_SCENE", openid, member.getAgentopenid(), (int) member.getIsagent());
+            qrcode = wxService.createQrcode("QR_LIMIT_STR_SCENE", openid);
             
             log.info(qrcode);
             
             // 转换为短链接
-//            qrcode = wxService.shorturl(qrcode);
+            qrcode = wxService.shorturl(qrcode);
 
             // 更新会员推荐二维码
             TalentmarketMember updateMember = new TalentmarketMember();
@@ -74,7 +75,6 @@ public class MemberCenterServiceImpl implements MemberCenterService {
             updateMember.setQrcode(qrcode);
             updateMember.setUpddate(new Date());
             memberMapper.updateByOpenid(updateMember);
-
         }
 
         member.setQrcode(qrcode);
@@ -128,7 +128,7 @@ public class MemberCenterServiceImpl implements MemberCenterService {
         
         // 是否总部经纪人
         int isagent = isHeader ? 
-        		FinalData.Member.HEADER_AGENT : FinalData.Member.COMMON_AGENT;
+        		FinalData.Member.ISAGENT_HEADER : FinalData.Member.ISAGENT_AGENT;
         member.setIsagent((byte) isagent);
         member.setUpddate(new Date());
         
@@ -138,6 +138,11 @@ public class MemberCenterServiceImpl implements MemberCenterService {
         memberMapper.updateByOpenid(member);
         
         return new ResultModel(true, "SUCCESS");
+    }
+
+    @Override
+    public TalentmarketMember getByOpenid(String openid) {
+        return memberMapper.getByOpenid(openid);
     }
 
     /**
@@ -178,7 +183,13 @@ public class MemberCenterServiceImpl implements MemberCenterService {
 		}
         return null;
     }
-    
+
+    @Override
+    public String getGamerules() {
+        String randredRule = gamerulesMapper.getRandredRule();
+        return randredRule;
+    }
+
     public static void main(String[] args) {
 		String password = "zhaohelong123456";
 		System.out.println(MD5Utils.MD5(password));

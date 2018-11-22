@@ -39,7 +39,7 @@ public interface TalentmarketMemberMapper {
      * @param randMoney, 单位分
      * @return
      */
-    int updateFans(String presenterOpenid, long randMoney);
+    int updateFans(@Param("openid") String presenterOpenid, @Param("randMoney") long randMoney);
 
     /**
      * 获取推荐者的粉丝列表

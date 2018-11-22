@@ -31,4 +31,10 @@ public interface TalentmarketGamerulesMapper {
      * @time:2018年11月19日 下午10:26:19
      */
 	String getHeaderPassword();
+
+    /**
+     * 获取扫码推荐游戏规则
+     * @return
+     */
+    String getRandredRule();
 }
