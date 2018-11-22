@@ -1,8 +1,6 @@
 package com.bzb.talentmarket.utils;
 
 import java.math.BigDecimal;
-import java.text.DecimalFormat;
-import java.util.Random;
 
 /**
  * 

@@ -137,6 +137,8 @@ public class MemberCenterServiceImpl implements MemberCenterService {
         
         memberMapper.updateByOpenid(member);
         
+        // TODO, 创建经纪人消息表
+        
         return new ResultModel(true, "SUCCESS");
     }
 

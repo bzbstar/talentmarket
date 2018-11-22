@@ -207,11 +207,57 @@ public class WxServiceImpl implements WxService {
 			// 文本消息转发到客服
 //			returnMessage = sendMessageToKf(fromUserName);
 			
-			forwardTextMessage(fromUserName, content); 
+//			forwardTextMessage(fromUserName, content); 
+			
+			// 给经济人发送消息
+			sendMessageToAgent(fromUserName);
 		}
 		
 	}
 	
+	/**
+	 * 
+	 * @Description:给经纪人发送消息
+	 * @param openid
+	 * @exception:
+	 * @author: bzb
+	 * @time:2018年11月22日 下午10:07:05
+	 */
+	private void sendMessageToAgent(String openid) {
+		log.info("给经纪人发送消息");
+		
+		// 获取粉丝信息
+		TalentmarketMember fans = memberMapper.getByOpenid(openid);
+		if (fans == null) {
+			log.error("发送消息异常，粉丝不存在， this is a bug");
+			throw new WxApiException("发送消息异常，粉丝不存在");
+		}
+		
+		if (fans.getIsagent() != FinalData.Member.ISAGENT_FAN) { // 经纪人不发送消息
+			return;
+		}
+		
+		String agentOpenid = fans.getAgentopenid();
+		if (StringUtils.hasText(agentOpenid)) { // 经纪人不存在，不发送消息
+			log.error("发送消息失败，经纪人不存在");
+			return;
+		}
+		
+		// 给经纪人发送消息
+		
+		// 给经纪人发送客服文本消息
+		
+		StringBuilder content = new StringBuilder();
+		content.append("粉丝给你发送新的消息了，请注意查收！\n\n")
+		.append("<a href='url?openid='")
+		.append(openid)
+		.append(">详情</a>");
+		
+		sendTextMessage(agentOpenid, content.toString());
+		
+		// TODO, 插入消息表
+	}
+
 	/**
 	 * 
 	 * @Description:转发粉丝发送过来的文本消息
@@ -448,8 +494,8 @@ public class WxServiceImpl implements WxService {
 		// 给推荐者发送红包消息
 		StringBuilder content = new StringBuilder();
 		content.append("感谢你对\"华山路人才市场\"的大力关注！\n\n")
-				.append("恭喜你获得红包：<span color='red'>").append(randMoney)
-				.append("</span>元\n\n")
+				.append("恭喜你获得红包：").append(randMoney)
+				.append("元\n\n")
 				.append("这是送您的一点点心意，请注意查收");
 		sendTextMessage(refereeOpenid, content.toString());
 	}
@@ -763,7 +809,8 @@ public class WxServiceImpl implements WxService {
 		params.put("wxappid", wxProperties.getAppid()); // 公众账号appid
 		params.put("send_name", "华山路人才市场"); // 红包发送者名称
 		params.put("re_openid", openid); // 粉丝的openid
-		params.put("total_amount", money); // 红包发放金额，单位分
+//		params.put("total_amount", money); // 红包发放金额，单位分, 100分
+		params.put("total_amount", 100); 
 		params.put("total_num", 1); // 	红包发放总人数
 		params.put("wishing", "感谢参与扫码推荐活动，祝您生活愉快"); // 红包祝福语
 		params.put("client_ip", ip); // 调用接口的机器Ip地址
@@ -780,18 +827,18 @@ public class WxServiceImpl implements WxService {
 		String resultStr = HttpUtils.posts(url, xmlParams);
 		log.info("企业付款返回结果result={}", resultStr);
 		
-//				// xml转Map
-//				Map<String, String> result = null;
-//				try {
-//					result = XmlUtils.xmlToMap(resultStr);
-//				} catch (Exception e) {
-//					e.printStackTrace();
-//					log.error("xml转换为map异常");
-//				}
-//				if (resultStr == null || "FAIL".equals(result.get("return_code"))) {
-//					log.error("调用微信接口-企业付款到零钱失败，reason is {}", result);
-//				}
-//				log.info("付款返回result={}", result);
+		Map<String, String> result = null;
+		try {
+			result = XmlUtils.xmlToMap(resultStr);
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.error("xml转换为map异常");
+		}
+		if (resultStr == null || "FAIL".equals(result.get("return_code"))) {
+			log.error("调用微信接口-企业付款到零钱失败，reason is {}", result);
+			throw new WxApiException("调用微信接口发放现金红包失败，reason is " + result);
+		}
+		log.info("付款返回result={}", result);
 	}
 	
 	

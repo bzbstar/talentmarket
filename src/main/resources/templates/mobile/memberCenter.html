@@ -14,7 +14,7 @@
             <van-col span="24">
                 <div style="height: 100%;" @click="getRedRecords()">
                     <div style="font-size: 12px;margin: 20px;">累积圈粉金额</div>
-                    <div style="font-size: 36px;color: #f44336;" th:text="${member.totalredmoney}"></div>
+                    <div style="font-size: 36px;color: #f44336;" th:text="${#numbers.formatDecimal(member.totalredmoney/100, 1, 2)}"></div>
                 </div>
             </van-col>
         </van-row>

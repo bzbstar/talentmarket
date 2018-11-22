@@ -27,15 +27,13 @@ import javax.xml.transform.stream.StreamResult;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
-import org.dom4j.Node;
 import org.dom4j.io.SAXReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import com.bzb.talentmarket.bean.wx.KfMessage;
 import com.bzb.talentmarket.bean.wx.TextMessage;
-import com.bzb.talentmarket.bean.wx.TransInfo;
 import com.thoughtworks.xstream.XStream;
 
 public class XmlUtils {

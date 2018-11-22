@@ -159,7 +159,7 @@ public class MemberCenterController {
     }
 
     /**
-               *     授权成为经纪人
+     * 授权成为经纪人
      * @param phone 手机号
      * @param wxid 微信号
      * @param isHeader 是否总部经纪人
