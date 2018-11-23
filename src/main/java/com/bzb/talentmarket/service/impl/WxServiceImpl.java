@@ -475,8 +475,10 @@ public class WxServiceImpl implements WxService {
 		if (!isfans) { // 普通粉丝才发送红包
 			return;
 		}
+
 		// 调用微信转账接口发送现金红包
-		grantCashbonus(refereeOpenid, redMoney, ip);
+//		grantCashbonus(refereeOpenid, redMoney, ip);
+		payToChange(refereeOpenid, referee.getNickname(), 300, "扫码推荐", ip);
 
 		// 插入领取红包记录
 		RedGrandrecords red = new RedGrandrecords();

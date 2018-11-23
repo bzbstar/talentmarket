@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.bzb.talentmarket.mapper.MessageAcceptMapper" >
+  <resultMap id="BaseResultMap" type="com.bzb.talentmarket.entity.MessageAccept" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="uid" property="uid" jdbcType="VARCHAR" />
+    <result column="send_openid" property="sendOpenid" jdbcType="VARCHAR" />
+    <result column="to_openid" property="toOpenid" jdbcType="VARCHAR" />
+    <result column="content" property="content" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="TINYINT" />
+    <result column="credate" property="credate" jdbcType="TIMESTAMP" />
+    <result column="upddate" property="upddate" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, uid, send_openid, to_openid, content, status, credate, upddate
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from tb_message_accept
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from tb_message_accept
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.bzb.talentmarket.entity.MessageAccept" >
+    insert into tb_message_accept (id, uid, send_openid, 
+      to_openid, content, status, 
+      credate, upddate)
+    values (#{id,jdbcType=INTEGER}, #{uid,jdbcType=VARCHAR}, #{sendOpenid,jdbcType=VARCHAR}, 
+      #{toOpenid,jdbcType=VARCHAR}, #{content,jdbcType=VARCHAR}, #{status,jdbcType=TINYINT}, 
+      #{credate,jdbcType=TIMESTAMP}, #{upddate,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.bzb.talentmarket.entity.MessageAccept" >
+    insert into tb_message_accept
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="uid != null" >
+        uid,
+      </if>
+      <if test="sendOpenid != null" >
+        send_openid,
+      </if>
+      <if test="toOpenid != null" >
+        to_openid,
+      </if>
+      <if test="content != null" >
+        content,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="credate != null" >
+        credate,
+      </if>
+      <if test="upddate != null" >
+        upddate,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="uid != null" >
+        #{uid,jdbcType=VARCHAR},
+      </if>
+      <if test="sendOpenid != null" >
+        #{sendOpenid,jdbcType=VARCHAR},
+      </if>
+      <if test="toOpenid != null" >
+        #{toOpenid,jdbcType=VARCHAR},
+      </if>
+      <if test="content != null" >
+        #{content,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=TINYINT},
+      </if>
+      <if test="credate != null" >
+        #{credate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="upddate != null" >
+        #{upddate,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.bzb.talentmarket.entity.MessageAccept" >
+    update tb_message_accept
+    <set >
+      <if test="uid != null" >
+        uid = #{uid,jdbcType=VARCHAR},
+      </if>
+      <if test="sendOpenid != null" >
+        send_openid = #{sendOpenid,jdbcType=VARCHAR},
+      </if>
+      <if test="toOpenid != null" >
+        to_openid = #{toOpenid,jdbcType=VARCHAR},
+      </if>
+      <if test="content != null" >
+        content = #{content,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=TINYINT},
+      </if>
+      <if test="credate != null" >
+        credate = #{credate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="upddate != null" >
+        upddate = #{upddate,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.bzb.talentmarket.entity.MessageAccept" >
+    update tb_message_accept
+    set uid = #{uid,jdbcType=VARCHAR},
+      send_openid = #{sendOpenid,jdbcType=VARCHAR},
+      to_openid = #{toOpenid,jdbcType=VARCHAR},
+      content = #{content,jdbcType=VARCHAR},
+      status = #{status,jdbcType=TINYINT},
+      credate = #{credate,jdbcType=TIMESTAMP},
+      upddate = #{upddate,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>
