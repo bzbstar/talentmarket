@@ -79,6 +79,12 @@ public interface WxService {
 	 * @param content 文本内容
 	 */
 	void sendTextMessage(String openid, String content);
+	
+	/**
+	 *  客服消息，发送图文消息
+	 * @param content 文本内容
+	 */
+	void sendNewsMessage(String openid, String content);
 
 	/**
 	 * 根据授权code获取网页授权凭证，和全局的接口调用凭证不一样

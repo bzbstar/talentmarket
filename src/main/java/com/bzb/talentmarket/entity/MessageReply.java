@@ -18,6 +18,16 @@ public class MessageReply {
     private Date credate;
 
     private Date upddate;
+    
+    public String getTableName() {
+		return tableName;
+	}
+
+	public void setTableName(String tableName) {
+		this.tableName = tableName;
+	}
+
+	private String tableName;
 
     public Integer getId() {
         return id;

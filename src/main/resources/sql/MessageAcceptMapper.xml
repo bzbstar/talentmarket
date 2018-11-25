@@ -17,15 +17,15 @@
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
     select 
     <include refid="Base_Column_List" />
-    from tb_message_accept
+    from ${tableName}
     where id = #{id,jdbcType=INTEGER}
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
-    delete from tb_message_accept
+    delete from ${tableName}
     where id = #{id,jdbcType=INTEGER}
   </delete>
   <insert id="insert" parameterType="com.bzb.talentmarket.entity.MessageAccept" >
-    insert into tb_message_accept (id, uid, send_openid, 
+    insert into ${tableName} (id, uid, send_openid, 
       to_openid, content, status, 
       credate, upddate)
     values (#{id,jdbcType=INTEGER}, #{uid,jdbcType=VARCHAR}, #{sendOpenid,jdbcType=VARCHAR}, 
@@ -33,7 +33,7 @@
       #{credate,jdbcType=TIMESTAMP}, #{upddate,jdbcType=TIMESTAMP})
   </insert>
   <insert id="insertSelective" parameterType="com.bzb.talentmarket.entity.MessageAccept" >
-    insert into tb_message_accept
+    insert into ${tableName}
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="id != null" >
         id,
@@ -88,7 +88,7 @@
     </trim>
   </insert>
   <update id="updateByPrimaryKeySelective" parameterType="com.bzb.talentmarket.entity.MessageAccept" >
-    update tb_message_accept
+    update ${tableName}
     <set >
       <if test="uid != null" >
         uid = #{uid,jdbcType=VARCHAR},
@@ -115,7 +115,7 @@
     where id = #{id,jdbcType=INTEGER}
   </update>
   <update id="updateByPrimaryKey" parameterType="com.bzb.talentmarket.entity.MessageAccept" >
-    update tb_message_accept
+    update ${tableName}
     set uid = #{uid,jdbcType=VARCHAR},
       send_openid = #{sendOpenid,jdbcType=VARCHAR},
       to_openid = #{toOpenid,jdbcType=VARCHAR},
@@ -125,4 +125,43 @@
       upddate = #{upddate,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=INTEGER}
   </update>
+  
+  <!-- 新增表语句 -->
+  <update id="createTable" parameterType="java.lang.String">
+  	CREATE TABLE IF NOT EXISTS tb_message_accept_${openid} (
+	  `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '主键id',
+	  `uid` varchar(32) NOT NULL DEFAULT '' COMMENT '32位UUID，唯一',
+	  `send_openid` varchar(50) NOT NULL DEFAULT '' COMMENT '发送方的openid, 粉丝发给经纪人',
+	  `to_openid` varchar(50) NOT NULL DEFAULT '' COMMENT '接受方的openid，接收方为经纪人',
+	  `content` varchar(1000) NOT NULL DEFAULT '' COMMENT '消息内容',
+	  `status` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '消息状态， 0 未读 1 已读 2 删除',
+	  `credate` datetime NOT NULL COMMENT '创建时间',
+	  `upddate` datetime DEFAULT NULL COMMENT '修改时间',
+	  PRIMARY KEY (`id`),
+	  UNIQUE KEY `uid` (`uid`)
+	) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='经纪人消息接受表';
+
+  	CREATE TABLE IF NOT EXISTS tb_message_reply_${openid} (
+  	  `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '主键id',
+	  `uid` varchar(32) NOT NULL DEFAULT '' COMMENT '32位UUID，唯一',
+	  `send_openid` varchar(50) NOT NULL DEFAULT '' COMMENT '发送方的openid，经纪人',
+	  `to_openid` varchar(50) NOT NULL DEFAULT '' COMMENT '接受方的openid，粉丝',
+	  `content` varchar(1000) NOT NULL DEFAULT '' COMMENT '消息内容',
+	  `status` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '消息状态， 0 未读 1 已读 2 删除',
+	  `credate` datetime NOT NULL COMMENT '创建时间',
+	  `upddate` datetime DEFAULT NULL COMMENT '修改时间',
+	  PRIMARY KEY (`id`),
+	  UNIQUE KEY `uid` (`uid`)
+	) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='经纪人消息回复表';
+  </update>
+  
+  <select id="getNewFiveMessages" resultMap="BaseResultMap">
+  	SELECT 
+  		<include refid="Base_Column_List" />
+  	FROM ${tableName} 
+  	WHERE 
+  		send_openid = #{openid,jdbcType=VARCHAR} 
+  	ORDER BY id DESC 
+  	LIMIT 5 
+  </select>
 </mapper>

@@ -38,7 +38,7 @@ public class MemberCenterController {
     private MemberCenterService memberCenterService;
 
     /**
-     * 前往会员中心页面, 注意这里是通过微信授权过来的
+               * 前往会员中心页面, 注意这里是通过微信授权过来的
      * @param code 微信网页授权code
      * @param  state 微信网页授权重定向后会带上state参数，开发者可以填写a-zA-Z0-9的参数值，最多128字节
      * @return
@@ -91,7 +91,7 @@ public class MemberCenterController {
 
 
     /**
-     * 采用静默授权去会员中心页
+               * 采用静默授权去会员中心页
      * @return
      */
     @RequestMapping(value = "/authMemberCenter", method = RequestMethod.GET)

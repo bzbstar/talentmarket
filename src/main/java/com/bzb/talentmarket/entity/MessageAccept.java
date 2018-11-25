@@ -18,8 +18,18 @@ public class MessageAccept {
     private Date credate;
 
     private Date upddate;
+    
+    private String tableName; // 表名
+    
+    public String getTableName() {
+		return tableName;
+	}
 
-    public Integer getId() {
+	public void setTableName(String tableName) {
+		this.tableName = tableName;
+	}
+
+	public Integer getId() {
         return id;
     }
 

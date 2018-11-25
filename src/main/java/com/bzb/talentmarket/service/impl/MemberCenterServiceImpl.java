@@ -6,6 +6,7 @@ import com.bzb.talentmarket.entity.RedGrandrecords;
 import com.bzb.talentmarket.entity.TalentmarketGamerules;
 import com.bzb.talentmarket.entity.TalentmarketMember;
 import com.bzb.talentmarket.exception.WxApiException;
+import com.bzb.talentmarket.mapper.MessageAcceptMapper;
 import com.bzb.talentmarket.mapper.RedGrandrecordsMapper;
 import com.bzb.talentmarket.mapper.TalentmarketGamerulesMapper;
 import com.bzb.talentmarket.mapper.TalentmarketMemberMapper;
@@ -49,6 +50,9 @@ public class MemberCenterServiceImpl implements MemberCenterService {
 
     @Autowired
     private TalentmarketGamerulesMapper gamerulesMapper;
+    
+    @Autowired
+    private MessageAcceptMapper messageAcceptMapper;
 
     @Override
     public TalentmarketMember getByAuthOpenid(String openid) {
@@ -137,7 +141,8 @@ public class MemberCenterServiceImpl implements MemberCenterService {
         
         memberMapper.updateByOpenid(member);
         
-        // TODO, 创建经纪人消息表
+        // 创建经纪人消息表
+        messageAcceptMapper.createTable(openid);
         
         return new ResultModel(true, "SUCCESS");
     }

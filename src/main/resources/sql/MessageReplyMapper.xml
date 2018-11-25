@@ -17,15 +17,15 @@
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
     select 
     <include refid="Base_Column_List" />
-    from tb_message_reply
+    from ${tableName}
     where id = #{id,jdbcType=INTEGER}
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
-    delete from tb_message_reply
+    delete from ${tableName}
     where id = #{id,jdbcType=INTEGER}
   </delete>
   <insert id="insert" parameterType="com.bzb.talentmarket.entity.MessageReply" >
-    insert into tb_message_reply (id, uid, send_openid, 
+    insert into ${tableName} (id, uid, send_openid, 
       to_openid, content, status, 
       credate, upddate)
     values (#{id,jdbcType=INTEGER}, #{uid,jdbcType=VARCHAR}, #{sendOpenid,jdbcType=VARCHAR}, 
@@ -33,7 +33,7 @@
       #{credate,jdbcType=TIMESTAMP}, #{upddate,jdbcType=TIMESTAMP})
   </insert>
   <insert id="insertSelective" parameterType="com.bzb.talentmarket.entity.MessageReply" >
-    insert into tb_message_reply
+    insert into ${tableName}
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="id != null" >
         id,
@@ -88,7 +88,7 @@
     </trim>
   </insert>
   <update id="updateByPrimaryKeySelective" parameterType="com.bzb.talentmarket.entity.MessageReply" >
-    update tb_message_reply
+    update ${tableName}
     <set >
       <if test="uid != null" >
         uid = #{uid,jdbcType=VARCHAR},
@@ -115,7 +115,7 @@
     where id = #{id,jdbcType=INTEGER}
   </update>
   <update id="updateByPrimaryKey" parameterType="com.bzb.talentmarket.entity.MessageReply" >
-    update tb_message_reply
+    update ${tableName}
     set uid = #{uid,jdbcType=VARCHAR},
       send_openid = #{sendOpenid,jdbcType=VARCHAR},
       to_openid = #{toOpenid,jdbcType=VARCHAR},
@@ -125,4 +125,13 @@
       upddate = #{upddate,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=INTEGER}
   </update>
+  
+  <select id="getNewTwoMessages" resultMap="BaseResultMap">
+    select 
+    	<include refid="Base_Column_List" />
+    from ${tableName}
+    where to_openid = #{openid} 
+    ORDER BY id DESC 
+    LIMIT 2 
+  </select>
 </mapper>

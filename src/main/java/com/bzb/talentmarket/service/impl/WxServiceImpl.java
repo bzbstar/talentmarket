@@ -2,12 +2,14 @@ package com.bzb.talentmarket.service.impl;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,22 +17,20 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
-
-import com.bzb.talentmarket.bean.QrcodeScene;
 import com.bzb.talentmarket.bean.wx.KfMessage;
 import com.bzb.talentmarket.bean.wx.TextMessage;
 import com.bzb.talentmarket.bean.wx.TransInfo;
 import com.bzb.talentmarket.bean.wx.WxProperties;
 import com.bzb.talentmarket.common.FinalData;
+import com.bzb.talentmarket.entity.MessageAccept;
 import com.bzb.talentmarket.entity.RedGrandrecords;
 import com.bzb.talentmarket.entity.TalentmarketGamerules;
-import com.bzb.talentmarket.entity.TalentmarketKf;
 import com.bzb.talentmarket.entity.TalentmarketMember;
 import com.bzb.talentmarket.exception.WxApiException;
+import com.bzb.talentmarket.mapper.MessageAcceptMapper;
 import com.bzb.talentmarket.mapper.RedGrandrecordsMapper;
 import com.bzb.talentmarket.mapper.TalentmarketEmployeeMapper;
 import com.bzb.talentmarket.mapper.TalentmarketGamerulesMapper;
-import com.bzb.talentmarket.mapper.TalentmarketKfMapper;
 import com.bzb.talentmarket.mapper.TalentmarketMemberMapper;
 import com.bzb.talentmarket.service.WxService;
 import com.bzb.talentmarket.utils.CommonUtils;
@@ -41,8 +41,6 @@ import com.bzb.talentmarket.utils.MessageUtils;
 import com.bzb.talentmarket.utils.SignUtils;
 import com.bzb.talentmarket.utils.UniqueIdUtils;
 import com.bzb.talentmarket.utils.XmlUtils;
-
-import sun.management.snmp.util.SnmpNamedListTableCache;
 
 /**
  * 
@@ -79,6 +77,9 @@ public class WxServiceImpl implements WxService {
 	
 	@Autowired
 	private RedGrandrecordsMapper redMapper;
+	
+	@Autowired
+	private MessageAcceptMapper messageAcceptMapper;
 
 	@Override
 	public String getAccessToken(String appid, String secret) {
@@ -210,7 +211,7 @@ public class WxServiceImpl implements WxService {
 //			forwardTextMessage(fromUserName, content); 
 			
 			// 给经济人发送消息
-			sendMessageToAgent(fromUserName);
+			sendMessageToAgent(fromUserName, content);
 		}
 		
 	}
@@ -219,11 +220,12 @@ public class WxServiceImpl implements WxService {
 	 * 
 	 * @Description:给经纪人发送消息
 	 * @param openid
+	 * @param content 消息内容
 	 * @exception:
 	 * @author: bzb
 	 * @time:2018年11月22日 下午10:07:05
 	 */
-	private void sendMessageToAgent(String openid) {
+	private void sendMessageToAgent(String openid, String content) {
 		log.info("给经纪人发送消息");
 		
 		// 获取粉丝信息
@@ -238,24 +240,35 @@ public class WxServiceImpl implements WxService {
 		}
 		
 		String agentOpenid = fans.getAgentopenid();
-		if (StringUtils.hasText(agentOpenid)) { // 经纪人不存在，不发送消息
+		if (!StringUtils.hasText(agentOpenid)) { // 经纪人不存在，不发送消息
 			log.error("发送消息失败，经纪人不存在");
 			return;
 		}
 		
 		// 给经纪人发送消息
-		
-		// 给经纪人发送客服文本消息
-		
-		StringBuilder content = new StringBuilder();
-		content.append("粉丝给你发送新的消息了，请注意查收！\n\n")
-		.append("<a href='url?openid='")
+		StringBuilder text = new StringBuilder();
+		text.append("<a href='https://open.weixin.qq.com/connect/oauth2/authorize?appid=")
+		.append(wxProperties.getAppid())
+		.append("&redirect_uri=http%3A%2F%2Fbzb.tunnel.qydev.com%2Fmessage%2FtoMessageCenter&response_type=code&scope=snsapi_base&state=")
 		.append(openid)
-		.append(">详情</a>");
+		.append("#wechat_redirect")
+		.append("'>粉丝【")
+		.append(fans.getNickname()).append("】给你发送新的消息啦！</a>");
+		sendTextMessage(agentOpenid, text.toString());
 		
-		sendTextMessage(agentOpenid, content.toString());
+		// 插入消息表
+		MessageAccept messageAccept = new MessageAccept();
+		messageAccept.setUid(UniqueIdUtils.getUUID());
+		messageAccept.setSendOpenid(openid);
+		messageAccept.setToOpenid(agentOpenid);
+		messageAccept.setContent(content);
+		messageAccept.setStatus((byte) FinalData.Message.STATUS_UNREAD);
+		Date now = new Date();
+		messageAccept.setCredate(now);
+		messageAccept.setUpddate(now);
+		messageAccept.setTableName(FinalData.Message.TABLENAME_PRE_ACCEPT + agentOpenid); // 表名
+		messageAcceptMapper.insertSelective(messageAccept);
 		
-		// TODO, 插入消息表
 	}
 
 	/**
@@ -461,29 +474,26 @@ public class WxServiceImpl implements WxService {
 		// 计算现金红包金额
 		double randMoney = CommonUtils.randomDigits(maxred);
 		long redMoney = (long) randMoney * 100; // 转换为分
+		redMoney = 30;
 
 		// 推荐者信息
 		TalentmarketMember referee = memberMapper.getByOpenid(refereeOpenid);
 
 		// 是否经纪人
-		Integer isagent = (int) referee.getIsagent();
-		boolean isfans = isagent == FinalData.Member.ISAGENT_FAN; // 是否普通粉丝
+//		Integer isagent = (int) referee.getIsagent();
+//		boolean isfans = isagent == FinalData.Member.ISAGENT_FAN; // 是否普通粉丝
 
 		// 更新推荐人的统计相关信息
-		memberMapper.updateFans(refereeOpenid, isfans ? redMoney : 0);
-
-		if (!isfans) { // 普通粉丝才发送红包
-			return;
-		}
+		memberMapper.updateFans(refereeOpenid, redMoney);
 
 		// 调用微信转账接口发送现金红包
-//		grantCashbonus(refereeOpenid, redMoney, ip);
-		payToChange(refereeOpenid, referee.getNickname(), 300, "扫码推荐", ip);
+		grantCashbonus(refereeOpenid, redMoney, ip);
 
 		// 插入领取红包记录
 		RedGrandrecords red = new RedGrandrecords();
 		red.setUid(UniqueIdUtils.getUUID());
 		red.setDraweruid(referee.getOpenid());
+		red.setOpenid(refereeOpenid);
 		red.setName(referee.getNickname());
 		red.setMoney(redMoney);
 		red.setSourceOpenid(openid);
@@ -812,7 +822,7 @@ public class WxServiceImpl implements WxService {
 		params.put("send_name", "华山路人才市场"); // 红包发送者名称
 		params.put("re_openid", openid); // 粉丝的openid
 //		params.put("total_amount", money); // 红包发放金额，单位分, 100分
-		params.put("total_amount", 100); 
+		params.put("total_amount", money); 
 		params.put("total_num", 1); // 	红包发放总人数
 		params.put("wishing", "感谢参与扫码推荐活动，祝您生活愉快"); // 红包祝福语
 		params.put("client_ip", ip); // 调用接口的机器Ip地址
@@ -841,6 +851,32 @@ public class WxServiceImpl implements WxService {
 			throw new WxApiException("调用微信接口发放现金红包失败，reason is " + result);
 		}
 		log.info("付款返回result={}", result);
+	}
+
+	@Override
+	public void sendNewsMessage(String openid, String content) {
+		log.info("发送图文消息");
+		
+		Map<String, Object> article = new HashMap<>();
+		article.put("title", "你好");
+		article.put("description", "你的粉丝给你发送消息啦");
+		article.put("picurl", "http://thirdwx.qlogo.cn/mmopen/DzfLC7vAweubs3BgcRTuuMkEfoHlTZkaTQw6M2hUxRDkVBl20vbelTGZ9XsreBq7k7dn7eK1zXiaRpWndboujXsibAkiaf2DERic/132");
+		article.put("url", "http://www.baiud.com");
+		
+		Map<String, Object> articles = new HashMap<>();
+		articles.put("articles", Arrays.asList(article));
+		
+		Map<String, Object> params = new HashMap<>();
+		params.put("touser", openid);
+		params.put("msgtype", "news");
+		params.put("news", articles);
+		
+		String url = "https://api.weixin.qq.com/cgi-bin/message/custom/send?access_token=" + getAccessToken();
+		Map<String, Object> result = restTemplate.postForObject(url, params, Map.class);
+		if (result == null || Integer.parseInt(CommonUtils.objToStr(result.get("errcode"))) != 0) {
+			log.error("调用微信发送文本消息客服接口失败， reason is {}", result);
+			throw new WxApiException("调用微信发送文本消息客服接口失败， reason is " + result.toString());
+		}
 	}
 	
 	

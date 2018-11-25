@@ -41,16 +41,18 @@ public class TestController {
 //        wxService.getkflist();
 
 //        wxService.addKf("", "客服001");
-
-//        wxService.sendTextMessage("oqFhA1YfrunnhBasHmsdZ4KCLqok", "你好，我\n<a href='http://www.baidu.com'>百度</a>");
-    	
-//    	wxService.addKf(kfPre, nickname);
-        String username = "白志斌";
-        long money = 100;
-        String desc = "扫码推荐";
-        String ip = request.getLocalAddr();
+//        StringBuilder text = new StringBuilder();
+//		text.append("粉丝给你发送新的消息了，请注意查收！\n\n")
+//		.append("<a href='http://www.baidu.com?openid=").append(openid).append("' style=\"float: right;\">详情</a>");
+//        wxService.sendNewsMessage("oqFhA1YfrunnhBasHmsdZ4KCLqok", text.toString());
+//    	
+////    	wxService.addKf(kfPre, nickname);
+//        String username = "白志斌";
+//        long money = 100;
+//        String desc = "扫码推荐";
+//        String ip = request.getLocalAddr();
 //       wxService.grantCashbonus(openid, money, ip);
-        return "mobile/authAgent";
+        return "mobile/messageCenter";
     }
     
 }

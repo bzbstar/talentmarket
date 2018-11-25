@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<div th:replace="mobile/common :: common_header('消息中心')"></div><!--头部替换为公共模版-->
+	<style type="text/css">
+		* {
+			margin: 0;
+			padding: 0;
+		}
+		html, body {
+			height: 100%;
+		}
+		body {
+			font-family: 微软雅黑;
+			background-color: #f4f4f4;
+		}
+		.demon {
+			display: flex;
+			flex-direction: column;
+			height: 100%;
+		}
+		.fixed {
+			width: 100%;
+			line-height: 45px;
+			font-size: 16px;
+			position: fixed;
+		}
+		.fixTop {
+			top: 0px;
+		}
+		.fixBottom {
+			bottom: 0px;
+		}
+		.container2 {
+			flex: 1;
+			margin: 55px 10px;
+			background-color: #fff;
+			overflow: scroll;
+		}
+</style>
+</head>
+<body>
+
+	<div id="app" style="background-color: #fafafa;">
+		<van-nav-bar th:title="${fans.nickname}"  class="fixed fixTop">
+            <img th:src="${fans.headimgurl}"
+                 width="26px;" style="border-radius:50%;" slot="left"/>
+        </van-nav-bar>
+		
+		<div style="margin: 45px 0px 50px 0px;">
+		
+			<div>
+			    <van-panel v-for="message in accepts" style="margin-bottom: 15px;">
+			    	<div slot="header" style="padding: 10px 0px 0px 10px; color: #666666;font-size: 12px;">{{formatDate(message.credate)}}</div>
+				 	<div style="padding: 10px 10px 10px 20px;font-size: 13px;">{{message.content}}</div>
+				</van-panel>
+			</div>
+			
+			<van-nav-bar th:title="${agent.nickname}">
+	            <img th:src="${agent.headimgurl}"
+	                 width="26px;" style="border-radius:50%;" slot="right"/>
+	        </van-nav-bar>
+			
+			<div>
+			    <van-panel v-for="message in replys" style="margin-bottom: 15px;">
+			    	<div slot="header" style="padding: 10px 10px 0px 0px;color: #666666;font-size: 12px;text-align: right;">{{formatDate(message.credate)}}</div>
+				 	<div style="padding: 10px 20px 10px 10px;font-size: 13px;text-align: right;">{{message.content}}</div>
+				</van-panel>
+			</div>
+			
+		</div>
+
+		<div class="fixed fixBottom">
+		  <van-field
+		  	v-model="content"
+		    center
+		    clearable
+		    placeholder="回复内容"
+		  >
+		    <van-button slot="button" size="small" type="primary" @click="sendMessage()">发送</van-button>
+		  </van-field>
+		</div>
+		
+	</div>
+	
+
+    <script type="text/javascript" th:inline="javascript">
+    /*<![CDATA[*/
+    	
+        var vm = new Vue({
+            el: '#app',
+            data: {
+            	accepts : [], // 接受列表
+            	replys : [], // 回复列表
+            	content : ''
+            },
+            mounted () {
+            	this.getMessageAccepts();
+            },
+            methods : {
+            	
+            	// 时间戳转换为日期格式
+                formatDate: function (timestamp) {
+                    var time = new Date(timestamp);
+                    var y = time.getFullYear();
+                    var m = time.getMonth()+1;
+                    var d = time.getDate();
+                    var h = time.getHours();
+                    var mm = time.getMinutes();
+                    var s = time.getSeconds();
+                    return y+'-'+this.add0(m)+'-'+this.add0(d)+' '+this.add0(h)+':'+this.add0(mm)+':'+this.add0(s);
+                }
+
+                ,
+                add0 : function (m) {
+                    return m < 10 ? '0'+ m : m;
+                },
+            	
+            	// 获取消息列表
+            	getMessageAccepts() {
+            		axios.get(/*[[@{/message/messageAccepts}]]*/,{
+                        params: {
+                            openid : [[${fans.openid}]],
+                            agentOpenid : [[${agent.openid}]],
+                        }
+                    })
+                    .then(function (response) {
+
+                        let result = response.data; // 返回结果
+                        let accepts = result.o.accepts;
+                        let replys = result.o.replys;
+                        if (accepts.length > 0) {
+
+                            // 每次加载10条数据，并添加到list集合中
+                            for(var i = 0, len = accepts.length; i < len; i++){
+                                vm.accepts.push(accepts[i]);
+                            }
+                        }
+                        
+                        if (replys.length > 0) {
+
+                            // 每次加载10条数据，并添加到list集合中
+                            for(var i = 0, len = replys.length; i < len; i++){
+                                vm.replys.push(replys[i]);
+                            }
+                        }
+
+                    })
+                    .catch(function (error) {
+                        console.log(error);
+                    });
+            	}, 
+            	
+            	// 回复消息
+            	sendMessage() {
+            		if(!vm.content) {
+            			this.$toast.fail('消息不能为空');
+            			return false;
+            		}
+            		
+            		// 提交表单
+                    var params = new URLSearchParams();
+					params.append('openid', [[${fans.openid}]]);
+					params.append('agentOpenid', [[${agent.openid}]]);
+					params.append('content', vm.content);
+                    
+                    axios.post(/*[[@{/message/sendMessageToFans}]]*/, params)
+                    .then((res) => {
+                    	console.log('res', res);
+                    	let result = res.data;
+                    	if (result.success) {
+                    		this.$toast.success('消息发送成功');
+                    		// 清空表单
+                            vm.replys.push({credate: Date.parse(new Date()), content: vm.content});
+                            vm.content = '';
+                    	} else {
+                    		this.$toast.fail(result.message);
+                    	}
+                    }).catch((err) => {
+                    	console.log(err);
+                    });
+            	}
+            }
+        });
+
+    /*]]>*/
+    </script>
+
+</body>
+</html>

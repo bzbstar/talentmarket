@@ -1,11 +1,11 @@
 package com.bzb.talentmarket.mapper;
 
-import com.bzb.talentmarket.entity.TalentmarketMember;
-import com.sun.org.glassfish.gmbal.ParameterNames;
-
 import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
+
+import com.bzb.talentmarket.entity.TalentmarketMember;
+
 public interface TalentmarketMemberMapper {
     int deleteByPrimaryKey(Integer id);
 
